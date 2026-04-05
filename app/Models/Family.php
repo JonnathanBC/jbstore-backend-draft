@@ -9,8 +9,13 @@ class Family extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'name',
+    ];
+
     // Relation 1:n
-    public function categories() {
+    public function categories()
+    {
         return $this->hasMany(Category::class);
     }
 }

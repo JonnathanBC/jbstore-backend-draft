@@ -9,6 +9,11 @@ class Subcategory extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "name",
+        "category_id"
+    ];
+
     // Relation 1:n
     public function products()
     {

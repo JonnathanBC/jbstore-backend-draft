@@ -9,6 +9,16 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "sku",
+        "name",
+        "description",
+        "image_path",
+        "image_path",
+        "price",
+        "subcategory_id",
+    ];
+
     // Relations 1:n
     public function variants()
     {

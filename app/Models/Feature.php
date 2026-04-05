@@ -9,6 +9,12 @@ class Feature extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "value",
+        "option_id",
+        "description",
+    ];
+
     // Relations 1:n inverse
     public function option()
     {

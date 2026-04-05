@@ -9,6 +9,12 @@ class Variant extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        "sku",
+        "image_path",
+        "product_id",
+    ];
+
     // Relation 1:n inverse
     public function product()
     {
