@@ -12,9 +12,10 @@ return new class extends Migration
     {
         Schema::create('variants', function (Blueprint $table) {
             $table->id();
-            $table->string('sku');
+            $table->string('sku')->unique();
             $table->string('image_path');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
+            $table->index('product_id');
             $table->timestamps();
         });
     }

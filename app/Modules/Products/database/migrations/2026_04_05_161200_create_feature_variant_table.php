@@ -14,6 +14,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('feature_id')->constrained()->onDelete('cascade');
             $table->foreignId('variant_id')->constrained()->onDelete('cascade');
+            $table->index('feature_id');
+            $table->index('variant_id');
             $table->timestamps();
         });
     }
