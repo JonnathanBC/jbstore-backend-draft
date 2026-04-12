@@ -26,7 +26,7 @@ class Product extends Model
 
     public function subcategory()
     {
-        return $this->belongsTo(\App\Modules\Categories\Models\Subcategory::class);
+        return $this->belongsTo(\App\Modules\Categories\Models\Subcategory::class, 'subcategory_id');
     }
 
     public function options()

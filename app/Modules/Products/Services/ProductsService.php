@@ -12,12 +12,12 @@ class ProductsService
 {
     public function getAllProducts(): Collection
     {
-        return Product::with(['subcategory', 'variants.features', 'options'])->get();
+        return Product::with(['variants.features', 'options'])->get();
     }
 
     public function getProductById(int $id): ?Product
     {
-        return Product::with(['subcategory', 'variants.features', 'options'])->find($id);
+        return Product::with(['variants.features', 'options'])->find($id);
     }
 
     public function createProduct(array $data): Product
@@ -28,7 +28,7 @@ class ProductsService
     public function updateProduct(Product $product, array $data): Product
     {
         $product->update($data);
-        return $product->fresh(['subcategory', 'variants.features', 'options']);
+        return $product->fresh(['variants.features', 'options']);
     }
 
     public function deleteProduct(Product $product): bool
