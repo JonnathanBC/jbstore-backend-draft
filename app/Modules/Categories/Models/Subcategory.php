@@ -17,7 +17,7 @@ class Subcategory extends Model
 
     public function products()
     {
-        return $this->hasMany(\App\Models\Product::class);
+        return $this->hasMany(\App\Modules\Products\Models\Product::class);
     }
 
     public function category()

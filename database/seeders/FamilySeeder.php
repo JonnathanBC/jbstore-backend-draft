@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Category;
-use App\Models\Family;
-use App\Models\Subcategory;
+use App\Modules\Categories\Models\Category;
+use App\Modules\Categories\Models\Family;
+use App\Modules\Categories\Models\Subcategory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
