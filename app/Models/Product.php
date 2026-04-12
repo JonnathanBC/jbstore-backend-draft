@@ -28,7 +28,7 @@ class Product extends Model
     // Relations 1:n inverse
     public function subcategory()
     {
-        return $this->belongsTo(Subcategory::class);
+        return $this->belongsTo(\App\Modules\Categories\Models\Subcategory::class);
     }
 
     // Relations n:n
