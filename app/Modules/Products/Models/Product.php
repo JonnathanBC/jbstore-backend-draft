@@ -2,6 +2,8 @@
 
 namespace App\Modules\Products\Models;
 
+use App\Modules\Products\Models\Variant;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -9,7 +11,6 @@ class Product extends Model
 {
     use HasFactory;
 
-    #[Fillable(['sku', 'name', 'description', 'image_path', 'price', 'subcategory_id'])]
     protected $fillable = [
         "sku",
         "name",

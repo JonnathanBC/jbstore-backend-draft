@@ -9,7 +9,6 @@ class Category extends Model
 {
     use HasFactory;
 
-    #[Fillable(['name', 'family_id'])]
     protected $fillable = [
         "name",
         "family_id",

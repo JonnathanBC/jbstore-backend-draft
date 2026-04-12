@@ -9,7 +9,6 @@ class Family extends Model
 {
     use HasFactory;
 
-    #[Fillable(['name'])]
     protected $fillable = [
         'name',
     ];

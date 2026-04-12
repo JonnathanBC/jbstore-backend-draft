@@ -9,7 +9,6 @@ class Subcategory extends Model
 {
     use HasFactory;
 
-    #[Fillable(['name', 'category_id'])]
     protected $fillable = [
         "name",
         "category_id"

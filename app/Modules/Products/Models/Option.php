@@ -9,7 +9,6 @@ class Option extends Model
 {
     use HasFactory;
 
-    #[Fillable(['name', 'type'])]
     protected $fillable = [
         "name",
         "type"

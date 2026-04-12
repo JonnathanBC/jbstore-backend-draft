@@ -9,7 +9,6 @@ class Feature extends Model
 {
     use HasFactory;
 
-    #[Fillable(['value', 'option_id', 'description'])]
     protected $fillable = [
         "value",
         "option_id",
