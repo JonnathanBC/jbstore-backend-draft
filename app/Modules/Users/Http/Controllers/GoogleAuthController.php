@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Modules\User\Http\Controllers;
+namespace App\Modules\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\User\Models\User as ModelsUser;
+use App\Modules\Users\Models\User;
 
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
@@ -21,7 +21,7 @@ class GoogleAuthController extends Controller
     {
         $googleUser = Socialite::driver('google')->stateless()->user();
 
-        $user = ModelsUser::updateOrCreate(
+        $user = User::updateOrCreate(
             ['google_id' => $googleUser->getId()],
             [
                 'name' => $googleUser->getName(),

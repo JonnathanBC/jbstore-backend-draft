@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\User\Models;
+namespace App\Modules\Users\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;

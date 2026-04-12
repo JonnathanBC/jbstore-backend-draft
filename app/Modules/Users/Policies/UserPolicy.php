@@ -2,7 +2,7 @@
 
 namespace App\Modules\Users\Policies;
 
-use App\Modules\User\Models\User;
+use App\Modules\Users\Models\User;
 
 class UserPolicy
 {
