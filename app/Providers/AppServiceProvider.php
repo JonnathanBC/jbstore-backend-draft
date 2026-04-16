@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Policies\AdminPolicy;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,5 +21,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
+    }
+
+    protected function policies(): array
+    {
+        return [
+            'App\Modules\Users\Models\User' => AdminPolicy::class,
+        ];
     }
 }

@@ -5,7 +5,7 @@ use App\Modules\Categories\Http\Controllers\FamilyController;
 use App\Modules\Categories\Http\Controllers\SubcategoryController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', 'admin'])
+Route::middleware(['auth:sanctum', 'can:admin'])
     ->name('admin.')
     ->group(function () {
         Route::apiResource('families', FamilyController::class);
