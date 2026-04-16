@@ -4,6 +4,7 @@ namespace App\Modules\Categories\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
 use App\Modules\Categories\Models\Family;
 
 class FamilyController extends Controller
@@ -13,11 +14,6 @@ class FamilyController extends Controller
         $family = Family::paginate();
 
         return response()->json($family);
-    }
-
-    public function create()
-    {
-        return response()->json(['message' => 'create']);
     }
 
     public function store(Request $request)
@@ -30,11 +26,6 @@ class FamilyController extends Controller
     public function show(Family $family)
     {
         return response()->json($family);
-    }
-
-    public function edit()
-    {
-        return response()->json(['message' => 'edit']);
     }
 
     public function update(Request $request, Family $family)
