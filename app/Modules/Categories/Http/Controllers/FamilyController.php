@@ -9,11 +9,13 @@ use App\Modules\Categories\Models\Family;
 
 class FamilyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $family = Family::paginate();
-
-        return response()->json($family);
+        return $this->paginated(
+            Family::query(),
+            $request,
+            sortable: ['id', 'name', 'created_at'],
+        );
     }
 
     public function store(Request $request)
