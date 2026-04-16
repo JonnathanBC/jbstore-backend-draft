@@ -2,13 +2,12 @@
 
 namespace App\Modules\Users\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Modules\Users\Models\User;
 
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
-class GoogleAuthController extends Controller
+class GoogleAuthController
 {
     public function redirect()
     {

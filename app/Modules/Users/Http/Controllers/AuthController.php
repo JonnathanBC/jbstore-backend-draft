@@ -2,7 +2,6 @@
 
 namespace App\Modules\Users\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Modules\Users\Actions\LoginAction;
 use App\Modules\Users\Actions\RegisterAction;
@@ -10,7 +9,7 @@ use App\Modules\Users\Http\Requests\RegisterRequest;
 
 use Illuminate\Http\Request;
 
-class AuthController extends Controller
+class AuthController
 {
     public function register(RegisterRequest $request, RegisterAction $action)
     {
