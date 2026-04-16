@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Modules\User\Actions;
+namespace App\Modules\Users\Actions;
 
 use App\Modules\Users\Models\User;
 use Illuminate\Support\Facades\Hash;
