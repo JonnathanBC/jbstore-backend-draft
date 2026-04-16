@@ -2,7 +2,6 @@
 
 namespace App\Modules\Users\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,14 +11,12 @@ use Laravel\Sanctum\HasApiTokens;
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
+    protected static function newFactory()
+    {
+        return \App\Modules\Users\Factories\UserFactory::new();
+    }
 
     protected $fillable = ['name', 'email', 'password', 'google_id', 'avatar', 'role'];
 
