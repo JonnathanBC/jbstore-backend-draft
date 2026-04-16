@@ -2,7 +2,7 @@
 
 namespace App\Modules\Users;
 
-use App\Modules\Users\Models\User as ModelsUser;
+use App\Modules\Users\Models\User;
 use App\Modules\Users\Policies\UserPolicy;
 
 use Illuminate\Support\Facades\Gate;
@@ -30,6 +30,6 @@ class UsersServiceProvider extends ServiceProvider
             ->middleware('api')
             ->group(__DIR__ . '/routes/api.php');
 
-        Gate::policy(ModelsUser::class, UserPolicy::class);
+        Gate::policy(User::class, UserPolicy::class);
     }
 }
