@@ -11,10 +11,12 @@ class FamilyController extends Controller
 {
     public function index(Request $request)
     {
+        $allowedSortable = ['updated_at'];
+
         return $this->paginated(
             Family::query(),
             $request,
-            sortable: ['id', 'name', 'created_at'],
+            $allowedSortable,
         );
     }
 
