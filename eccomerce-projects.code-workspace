@@ -4,7 +4,7 @@
             "path": ".",
         },
         {
-            "path": "../jbstore-client-draft",
+            "path": "../jb-store-client-draft",
         },
     ],
 }
