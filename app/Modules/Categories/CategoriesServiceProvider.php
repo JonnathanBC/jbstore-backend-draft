@@ -4,6 +4,7 @@ namespace App\Modules\Categories;
 
 use App\Modules\Categories\Services\CategoriesService;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class CategoriesServiceProvider extends ServiceProvider
@@ -18,6 +19,7 @@ class CategoriesServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
-        $this->loadRoutesFrom(__DIR__ . '/routes/admin.php');
+
+        Route::middleware('api')->group(__DIR__ . '/routes/admin.php');
     }
 }
