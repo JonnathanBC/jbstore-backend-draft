@@ -41,6 +41,10 @@ class FamilyController extends Controller
 
     public function destroy(Family $family)
     {
+        if ($family->categories()->count() > 0) {
+            return response()->json(['message' => 'No se puede eliminar una familia con categorías'], 422);
+        }
+
         $family->delete();
 
         return response()->json(['message' => 'deleted successfully']);
