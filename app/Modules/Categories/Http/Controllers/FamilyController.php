@@ -22,8 +22,11 @@ class FamilyController extends Controller
 
     public function store(Request $request)
     {
-        $data = Family::create($request->all());
+        $request->validate([
+            'name' => 'required',
+        ]);
 
+        $data = Family::create($request->all());
         return response()->json($data, 201);
     }
 
@@ -34,6 +37,10 @@ class FamilyController extends Controller
 
     public function update(Request $request, Family $family)
     {
+        $request->validate([
+            'name' => 'required',
+        ]);
+
         $family->update($request->all());
 
         return response()->json($family);

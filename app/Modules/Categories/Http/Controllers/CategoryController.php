@@ -8,15 +8,25 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Category::with('family')->paginate());
+        $allowedSortable = ['updated_at'];
+
+        return $this->paginated(
+            Category::with('family'),
+            $request,
+            $allowedSortable,
+        );
     }
 
     public function store(Request $request)
     {
-        $data = Category::create($request->all());
-        return response()->json($data, 201);
+        $request->validate([
+            'family_id' => 'required|exists:families,id',
+            'name' => 'required',
+        ]);
+        $category = Category::create($request->all());
+        return response()->json($category, 201);
     }
 
     public function show(Category $category)
@@ -26,6 +36,11 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
+        $request->validate([
+            'family_id' => 'required|exists:families,id',
+            'name' => 'required',
+        ]);
+
         $category->update($request->all());
         return response()->json($category);
     }
