@@ -3,6 +3,7 @@
 namespace App\Modules\Categories\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Categories\Events\SubcategoryDeleting;
 use App\Modules\Categories\Models\Subcategory;
 use Illuminate\Http\Request;
 
@@ -37,12 +38,19 @@ class SubcategoryController extends Controller
 
     public function update(Request $request, Subcategory $subcategory)
     {
+        $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'category_id' => 'sometimes|required|exists:categories,id'
+        ]);
+
         $subcategory->update($request->all());
         return response()->json($subcategory);
     }
 
     public function destroy(Subcategory $subcategory)
     {
+        event(new SubcategoryDeleting($subcategory));
+
         $subcategory->delete();
         return response()->json(['message' => 'deleted successfully']);
     }
