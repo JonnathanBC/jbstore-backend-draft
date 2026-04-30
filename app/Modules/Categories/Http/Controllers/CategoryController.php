@@ -12,12 +12,27 @@ class CategoryController extends Controller
     {
         $allowedSortable = ['updated_at'];
 
+        $query = Category::with('family');
+
+        // Filtros dinámicos
+        if ($request->filled('family_id')) {
+            $query->where('family_id', $request->input('family_id'));
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'ilike', "%{$search}%");
+            });
+        }
+
         return $this->paginated(
-            Category::with('family'),
+            $query,
             $request,
             $allowedSortable,
         );
-    }
+}
 
     public function store(Request $request)
     {
