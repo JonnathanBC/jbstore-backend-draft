@@ -19,8 +19,10 @@ abstract class Controller
             }
         }
 
-        if (in_array($request->input('pagination'), ['false', '0'], true)) {
-            return response()->json($query->get());
+        if ($request->has('pagination') && !$request->boolean('pagination')) {
+            return response()->json([
+                'data' => $query->get(),
+            ]);
         }
 
         return response()->json(
