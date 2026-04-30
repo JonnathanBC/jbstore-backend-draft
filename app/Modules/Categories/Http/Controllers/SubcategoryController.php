@@ -8,13 +8,24 @@ use Illuminate\Http\Request;
 
 class SubcategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Subcategory::with('category')->paginate());
+        $allowedSortable = ['updated_at'];
+
+        return $this->paginated(
+            Subcategory::with('category.family'),
+            $request,
+            $allowedSortable,
+        );
     }
 
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:categories,id'
+        ]);
+
         $data = Subcategory::create($request->all());
         return response()->json($data, 201);
     }
