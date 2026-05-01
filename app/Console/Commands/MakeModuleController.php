@@ -53,14 +53,6 @@ class MakeModuleController extends Command
     }
 PHP;
 
-        // CREATE
-        $methods[] = <<<PHP
-    public function create()
-    {
-        return response()->json(['message' => 'create']);
-    }
-PHP;
-
         if ($model) {
             $modelClass = $model;
             $modelVar = lcfirst($modelClass);
@@ -83,14 +75,6 @@ PHP;
     public function show({$modelClass} \${$modelVar})
     {
         return response()->json(\${$modelVar});
-    }
-PHP;
-
-            // EDIT
-            $methods[] = <<<PHP
-    public function edit()
-    {
-        return response()->json(['message' => 'edit']);
     }
 PHP;
 
