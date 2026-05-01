@@ -13,8 +13,15 @@ class SubcategoryController extends Controller
     {
         $allowedSortable = ['updated_at'];
 
+        $query = Subcategory::with('category.family');
+
+        // Filtros dinámicos
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->input('category_id'));
+        }
+
         return $this->paginated(
-            Subcategory::with('category.family'),
+            $query,
             $request,
             $allowedSortable,
         );
