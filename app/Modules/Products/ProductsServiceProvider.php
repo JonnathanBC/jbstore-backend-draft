@@ -4,6 +4,7 @@ namespace App\Modules\Products;
 
 use App\Modules\Products\Services\ProductsService;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class ProductsServiceProvider extends ServiceProvider
@@ -23,5 +24,7 @@ class ProductsServiceProvider extends ServiceProvider
             \App\Modules\Categories\Events\SubcategoryDeleting::class,
             \App\Modules\Products\Listeners\CheckProductsBeforeSubcategoryDeletedListener::class
         );
+
+        Route::middleware('api')->group(__DIR__ . '/Routes/admin.php');
     }
 }
