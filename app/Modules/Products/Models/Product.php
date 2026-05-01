@@ -11,6 +11,11 @@ class Product extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \App\Modules\Products\Factories\ProductFactory::new();
+    }
+
     protected $fillable = [
         "sku",
         "name",

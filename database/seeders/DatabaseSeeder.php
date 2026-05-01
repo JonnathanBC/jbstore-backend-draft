@@ -4,9 +4,10 @@ namespace Database\Seeders;
 
 use App\Modules\Users\Enums\UserRoleEnum;
 use App\Modules\Users\Models\User;
-
+use App\Modules\Products\Models\Product;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +20,9 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
+        Storage::deleteDirectory('products');
+        Storage::makeDirectory('products');
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
@@ -28,5 +32,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             FamilySeeder::class
         ]);
+
+        Product::factory(150)->create();
     }
 }
