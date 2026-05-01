@@ -2,8 +2,9 @@
 
 namespace App\Modules\Products\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+
+use App\Http\Controllers\Controller;
 use App\Modules\Products\Models\Product;
 
 class ProductController extends Controller
@@ -22,8 +23,22 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        $data = Product::create($request->all());
+        $request->validate([
+            'image' => 'required|file|max:1024',
+            'sku' => 'required|unique:products,sku',
+            'name' => 'required|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+        ]);
 
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('products', 'public');
+
+            $request['image_path'] = $path;
+        }
+
+        $data = Product::create($request->all());
         return response()->json($data, 201);
     }
 
