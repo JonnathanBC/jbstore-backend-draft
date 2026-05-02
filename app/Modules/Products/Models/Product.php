@@ -25,6 +25,11 @@ class Product extends Model
         "subcategory_id",
     ];
 
+    public function subcategory()
+    {
+        return $this->belongsTo(\App\Modules\Categories\Models\Subcategory::class);
+    }
+
     public function variants()
     {
         return $this->hasMany(Variant::class);
