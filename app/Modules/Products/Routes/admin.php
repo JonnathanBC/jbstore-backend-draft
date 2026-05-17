@@ -12,5 +12,5 @@ Route::middleware(['auth:sanctum', 'can:admin'])
         Route::apiResource('products', ProductController::class);
 
         // Options
-        Route::get('options', [OptionController::class, 'index'])->name('options.index');
+        Route::resource('options', OptionController::class);
     });
