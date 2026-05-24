@@ -1,7 +1,9 @@
 <?php
 
+use App\Modules\Products\Http\Controllers\FeatureController;
 use App\Modules\Products\Http\Controllers\OptionController;
 use App\Modules\Products\Http\Controllers\ProductController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'can:admin'])
@@ -13,4 +15,7 @@ Route::middleware(['auth:sanctum', 'can:admin'])
 
         // Options
         Route::resource('options', OptionController::class);
+
+        // Features
+        Route::resource('features', FeatureController::class);
     });
