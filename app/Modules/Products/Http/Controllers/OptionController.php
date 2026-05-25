@@ -62,4 +62,11 @@ class OptionController extends Controller
 
         return response()->json($option, 201);
     }
+
+    public function destroy(Option $option)
+    {
+        $option->delete();
+
+        return response()->json(null, 204);
+    }
 }
