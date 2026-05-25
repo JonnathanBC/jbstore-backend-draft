@@ -20,4 +20,12 @@ class FeatureController extends Controller
 
         return response()->json($data, 201);
     }
+
+    public function destroy($id)
+    {
+        $feature = Feature::findOrFail($id);
+        $feature->delete();
+
+        return response()->json(null, 204);
+    }
 }
