@@ -8,6 +8,22 @@ use App\Modules\Products\Models\Feature;
 
 class FeatureController extends Controller
 {
+    public function index(Request $request)
+    {
+        $allowedSortable = ['updated_at'];
+        $query = Feature::query();
+
+        if ($request->filled('option_id')) {
+            $query->where('option_id', $request->input('option_id'));
+        }
+
+        return $this->paginated(
+            $query,
+            $request,
+            $allowedSortable,
+        );
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -21,11 +37,9 @@ class FeatureController extends Controller
         return response()->json($data, 201);
     }
 
-    public function destroy($id)
+    public function destroy(Feature $feature)
     {
-        $feature = Feature::findOrFail($id);
         $feature->delete();
-
         return response()->json(null, 204);
     }
 }
