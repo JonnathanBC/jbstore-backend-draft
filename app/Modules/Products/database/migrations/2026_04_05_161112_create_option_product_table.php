@@ -14,7 +14,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('option_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->string('value');
+            
+            $table->json('features');
             $table->index('option_id');
             $table->index('product_id');
             $table->timestamps();
