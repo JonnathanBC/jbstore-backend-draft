@@ -47,7 +47,13 @@ class ProductController extends Controller
     {
         $product->setAttribute('image_path', Storage::url($product->getAttribute('image_path')));
 
-        return response()->json(new ProductResource($product->load('subcategory.category.family')));
+        return response()
+            ->json(new ProductResource(
+                $product->load([
+                    'subcategory.category.family',
+                    'options'
+                ])
+            ), 200);
     }
 
     public function update(Request $request, Product $product)

@@ -21,5 +21,9 @@ Route::middleware(['auth:sanctum', 'can:admin'])
         Route::resource('features', FeatureController::class);
 
         // Option Products
+        Route::post(
+            'option-products/remove-features',
+            [OptionProductController::class, 'removeFeature']
+        );
         Route::post('options-product', [OptionProductController::class, 'store']);
     });

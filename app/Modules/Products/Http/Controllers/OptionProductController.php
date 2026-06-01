@@ -23,4 +23,27 @@ class OptionProductController extends Controller
 
         return response()->json($optionProduct, 201);
     }
+
+    public function removeFeature(Request $request)
+    {
+        $request->validate([
+            'option_id' => 'required|exists:options,id',
+            'feature_id' => 'required',
+        ]);
+
+        $optionProduct = OptionProduct::where('option_id', $request->option_id)->firstOrFail();
+
+        $features = collect($optionProduct->features)
+            ->reject(fn($feature) => $feature['id'] == $request->feature_id)
+            ->values()
+            ->toArray();
+
+        $optionProduct->update([
+            'features' => $features,
+        ]);
+
+        return response()->json([
+            'data' => $optionProduct->fresh(),
+        ]);
+    }
 }

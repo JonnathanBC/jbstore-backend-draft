@@ -27,6 +27,16 @@ class ProductResource extends JsonResource
                     ] : null,
                 ] : null;
             }),
+            'options' => $this->whenLoaded('options', function () {
+                return $this->options->map(function ($option) {
+                    return [
+                        'id' => $option->id,
+                        'name' => $option->name,
+                        'type' => $option->type,
+                        'features' => $option->pivot->features,
+                    ];
+                });
+            }),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
