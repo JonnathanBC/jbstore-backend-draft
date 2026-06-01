@@ -46,4 +46,22 @@ class OptionProductController extends Controller
             'data' => $optionProduct->fresh(),
         ]);
     }
+
+    public function removeOption(Request $request)
+    {
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'option_id' => 'required|exists:options,id',
+        ]);
+
+        $optionProduct = OptionProduct::where('option_id', $request->option_id)
+            ->where('product_id', $request->product_id)
+            ->firstOrFail();
+
+        $optionProduct->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
 }

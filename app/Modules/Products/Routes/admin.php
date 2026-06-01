@@ -25,5 +25,9 @@ Route::middleware(['auth:sanctum', 'can:admin'])
             'option-products/remove-features',
             [OptionProductController::class, 'removeFeature']
         );
+        Route::post(
+            'option-products/remove-option',
+            [OptionProductController::class, 'removeOption']
+        );
         Route::post('options-product', [OptionProductController::class, 'store']);
     });
