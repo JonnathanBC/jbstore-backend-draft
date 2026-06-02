@@ -4,10 +4,14 @@ namespace App\Modules\Products\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Products\Models\OptionProduct;
+use App\Modules\Products\Models\Product;
+use App\Modules\Products\Services\VariantService;
 use Illuminate\Http\Request;
 
 class OptionProductController extends Controller
 {
+    public function __construct(private VariantService $variantService) {}
+
     public function store(Request $request)
     {
         $request->validate([
@@ -20,6 +24,10 @@ class OptionProductController extends Controller
         ]);
 
         $optionProduct = OptionProduct::create($request->only('product_id', 'option_id', 'features'));
+
+        $this->variantService->generateForProduct(
+            Product::find($request->product_id)
+        );
 
         return response()->json($optionProduct, 201);
     }
@@ -42,6 +50,10 @@ class OptionProductController extends Controller
             'features' => $features,
         ]);
 
+        $this->variantService->generateForProduct(
+            Product::find($optionProduct->product_id)
+        );
+
         return response()->json([
             'data' => $optionProduct->fresh(),
         ]);
@@ -59,6 +71,10 @@ class OptionProductController extends Controller
             ->firstOrFail();
 
         $optionProduct->delete();
+
+        $this->variantService->generateForProduct(
+            Product::find($request->product_id)
+        );
 
         return response()->json([
             'success' => true,
