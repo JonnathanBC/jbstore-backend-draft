@@ -51,7 +51,8 @@ class ProductController extends Controller
             ->json(new ProductResource(
                 $product->load([
                     'subcategory.category.family',
-                    'options'
+                    'options',
+                    'variants.features'
                 ])
             ), 200);
     }
