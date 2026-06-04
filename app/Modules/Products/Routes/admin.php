@@ -13,6 +13,9 @@ Route::middleware(['auth:sanctum', 'can:admin'])
     ->group(function () {
         // Products
         Route::apiResource('products', ProductController::class);
+        Route::get('products/{product}/variants/{variant}', [ProductController::class, 'variants'])
+            ->name('products.variants')
+            ->scopeBindings();
 
         // Options
         Route::resource('options', OptionController::class);

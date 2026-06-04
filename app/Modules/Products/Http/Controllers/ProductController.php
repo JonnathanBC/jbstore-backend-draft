@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Modules\Products\Models\Product;
 use App\Modules\Products\Http\Resources\ProductResource;
+use App\Modules\Products\Models\Variant;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -85,5 +86,10 @@ class ProductController extends Controller
         Storage::delete($product->getAttribute('image_path'));
         $product->delete();
         return response()->json(['message' => 'Eliminado correctamente.']);
+    }
+
+    public function variants(Product $product, Variant $variant)
+    {
+        return $variant;
     }
 }
