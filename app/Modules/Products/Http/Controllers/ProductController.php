@@ -90,6 +90,6 @@ class ProductController extends Controller
 
     public function variants(Product $product, Variant $variant)
     {
-        return $variant;
+        return $variant->load(['product', 'features']);
     }
 }
