@@ -16,6 +16,7 @@ class ProductResource extends JsonResource
             'description' => $this->description,
             'image_path' => $this->image_path,
             'price' => $this->price,
+            'stock' => $this->stock,
             'subcategory_id' => $this->subcategory_id,
             'category' => $this->whenLoaded('subcategory', function () {
                 return $this->subcategory?->category ? [

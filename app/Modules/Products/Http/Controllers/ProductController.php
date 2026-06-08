@@ -32,6 +32,7 @@ class ProductController extends Controller
             'name' => 'required|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
             'subcategory_id' => 'required|exists:subcategories,id',
         ]);
 
@@ -66,6 +67,7 @@ class ProductController extends Controller
             'name' => 'required|max:255',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
             'subcategory_id' => 'required|exists:subcategories,id',
         ]);
 
