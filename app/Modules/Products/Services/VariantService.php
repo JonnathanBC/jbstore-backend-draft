@@ -2,8 +2,10 @@
 
 namespace App\Modules\Products\Services;
 
+use Illuminate\Http\Request;
 use App\Modules\Products\Models\Product;
 use App\Modules\Products\Models\Variant;
+use Illuminate\Support\Facades\Storage;
 
 class VariantService
 {
@@ -23,6 +25,26 @@ class VariantService
             $variant = Variant::create(['product_id' => $product->id]);
             $variant->features()->attach($combination);
         }
+    }
+
+    public function updateVariant(Request $request, Variant $variant)
+    {
+        $request->validate([
+            'image' => 'nullable|image|max:1024',
+            'sku' => 'nullable|numeric|min:0',
+            'stock' => 'nullable|numeric|min:0',
+        ]);
+
+        if ($request->hasFile('image')) {
+            Storage::delete($variant->getAttribute('image_path'));
+            $path = $request->file('image')->store('variants');
+            $request['image_path'] = $path;
+        }
+
+        $variant->update($request->all());
+        $variant['image_path'] = Storage::url($variant->getAttribute('image_path'));
+
+        return response()->json($variant, 200);
     }
 
     private function buildCombinations(array $arrays, int $index = 0, array $combination = []): array

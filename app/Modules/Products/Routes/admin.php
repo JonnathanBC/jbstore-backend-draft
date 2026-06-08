@@ -33,4 +33,7 @@ Route::middleware(['auth:sanctum', 'can:admin'])
             [OptionProductController::class, 'removeOption']
         );
         Route::post('options-product', [OptionProductController::class, 'store']);
+
+        // variants
+        
     });
