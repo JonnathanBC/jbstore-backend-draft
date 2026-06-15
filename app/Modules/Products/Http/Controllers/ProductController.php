@@ -94,4 +94,27 @@ class ProductController extends Controller
     {
         return $variant->load(['product', 'features']);
     }
+    
+    public function variantsUpdate(Request $request, Product $product, Variant $variant)
+    {
+        $data = $request->validate([
+            'image' => 'nullable|image|max:1024',
+            'sku' => 'required',
+            'stock' => 'required|numeric|min:0',
+        ]);
+
+        if ($variant->getAttribute('image_path')) {
+            Storage::delete($variant->getAttribute('image_path'));
+        }
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('variants');
+            $data['image_path'] = $path;
+        }
+
+        $variant->update($data);
+        $variant['image_path'] = Storage::url($variant->getAttribute('image_path'));
+
+        return response()->json($variant, 200);
+    }
 }
