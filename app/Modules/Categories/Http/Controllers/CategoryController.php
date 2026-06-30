@@ -12,7 +12,7 @@ class CategoryController extends Controller
     {
         $allowedSortable = ['updated_at'];
 
-        $query = Category::with('family');
+        $query = Category::with('family', 'subcategories');
 
         // Filtros dinámicos
         if ($request->filled('family_id')) {
