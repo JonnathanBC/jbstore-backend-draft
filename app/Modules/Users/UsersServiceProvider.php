@@ -30,6 +30,8 @@ class UsersServiceProvider extends ServiceProvider
             ->middleware('api')
             ->group(__DIR__ . '/routes/api.php');
 
+        Route::middleware('api')->group(__DIR__ . '/routes/admin.php');
+
         Gate::policy(User::class, UserPolicy::class);
     }
 }

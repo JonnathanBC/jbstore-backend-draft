@@ -25,6 +25,8 @@ class Cover extends Model
         'is_active' => 'boolean',
     ];
 
+    protected $appends = ['image'];
+
     protected function image(): Attribute
     {
         return Attribute::make(
