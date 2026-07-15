@@ -103,13 +103,12 @@ class ProductController extends Controller
             'stock' => 'required|numeric|min:0',
         ]);
 
-        if ($variant->getAttribute('image_path')) {
-            Storage::delete($variant->getAttribute('image_path'));
-        }
-
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('variants');
-            $data['image_path'] = $path;
+            $data['image_path'] = $request->file('image')->store('variants');
+
+            if ($variant->getAttribute('image_path')) {
+                Storage::delete($variant->getAttribute('image_path'));
+            }
         }
 
         $variant->update($data);

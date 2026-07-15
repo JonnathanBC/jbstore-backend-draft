@@ -29,4 +29,39 @@ class CoverController extends Controller
 
         return response()->json($cover, 201);
     }
+
+    public function show(Cover $cover)
+    {
+        return response()->json($cover);
+    }
+
+    public function update(Request $request, Cover $cover)
+    {
+        $data = $request->validate([
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'title' => 'required|string|max:255',
+            'start_at' => 'required|date',
+            'end_at' => 'nullable|date|after_or_equal:start_at',
+            'is_active' => 'required|boolean',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $oldPath = $cover->image_path;
+            $data['image_path'] = Storage::put('covers', $data['image']);
+
+            Storage::delete($oldPath);
+        }
+
+        $cover->update($data);
+
+        return response()->json($cover);
+    }
+
+    public function destroy(Cover $cover)
+    {
+        Storage::delete($cover->image_path);
+        $cover->delete();
+
+        return response()->json(null, 204);
+    }
 }
