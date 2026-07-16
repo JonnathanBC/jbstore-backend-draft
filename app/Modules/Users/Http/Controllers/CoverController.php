@@ -9,6 +9,19 @@ use Illuminate\Support\Facades\Storage;
 
 class CoverController extends Controller
 {
+
+    public function index(Request $request)
+    {
+        $allowedSortable = ['updated_at'];
+        $query = Cover::query();
+
+        return $this->paginated(
+            $query,
+            $request,
+            $allowedSortable,
+        );
+    }
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -18,11 +31,6 @@ class CoverController extends Controller
             'end_at' => 'nullable|date|after_or_equal:start_at',
             'is_active' => 'required|boolean',
         ]);
-
-        // if ($request->hasFile('image')) {
-        //     $path = $request->file('image')->store('covers', 'public');
-        //     $request['image_path'] = $path;
-        // }
 
         $data['image_path'] = Storage::put('covers', $data['image']);
         $cover = Cover::create($data);
