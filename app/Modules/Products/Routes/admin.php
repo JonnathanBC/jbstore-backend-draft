@@ -8,7 +8,7 @@ use App\Modules\Products\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'can:admin'])
-    ->prefix('api')
+    ->prefix('api/admin')
     ->name('admin.')
     ->group(function () {
         // Products
