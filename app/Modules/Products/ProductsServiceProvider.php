@@ -26,5 +26,6 @@ class ProductsServiceProvider extends ServiceProvider
         );
 
         Route::middleware('api')->group(__DIR__ . '/Routes/admin.php');
+        Route::middleware('api')->group(__DIR__ . '/Routes/api.php');
     }
 }

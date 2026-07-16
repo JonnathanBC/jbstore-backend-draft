@@ -4,12 +4,23 @@ namespace App\Modules\Products\Models;
 
 use App\Modules\Products\Models\Variant;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Product extends Model
 {
     use HasFactory;
+
+    protected $appends = ['image'];
+
+    protected function image(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->image_path ? Storage::url($this->image_path) : null,
+        );
+    }
 
     protected static function newFactory()
     {
