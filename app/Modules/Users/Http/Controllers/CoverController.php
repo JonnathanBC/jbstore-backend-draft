@@ -25,7 +25,7 @@ class CoverController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:1024',
             'title' => 'required|string|max:255',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
@@ -46,7 +46,7 @@ class CoverController extends Controller
     public function update(Request $request, Cover $cover)
     {
         $data = $request->validate([
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:1024',
             'title' => 'required|string|max:255',
             'start_at' => 'required|date',
             'end_at' => 'nullable|date|after_or_equal:start_at',
@@ -73,7 +73,7 @@ class CoverController extends Controller
         ]);
 
         foreach ($data['ids'] as $index => $id) {
-            Cover::where('id', $id)->update(['order' => $index]);
+            Cover::where('id', $id)->update(['order' => $index + 1]);
         }
 
         return response()->json(null, 204);

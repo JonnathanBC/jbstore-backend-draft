@@ -2,7 +2,12 @@
 
 use App\Modules\Users\Http\Controllers\AuthController;
 use App\Modules\Users\Http\Controllers\GoogleAuthController;
+use App\Modules\Users\Http\Controllers\PublicCoverController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('public')->group(function () {
+    Route::get('/covers', PublicCoverController::class);
+});
 
 Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
