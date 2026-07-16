@@ -21,5 +21,6 @@ class CategoriesServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
         Route::middleware('api')->group(__DIR__ . '/routes/admin.php');
+        Route::middleware('api')->group(__DIR__ . '/routes/api.php');
     }
 }
