@@ -12,7 +12,7 @@ class CoverController extends Controller
 
     public function index(Request $request)
     {
-        $allowedSortable = ['updated_at'];
+        $allowedSortable = ['updated_at', 'order'];
         $query = Cover::query();
 
         return $this->paginated(
@@ -63,6 +63,20 @@ class CoverController extends Controller
         $cover->update($data);
 
         return response()->json($cover);
+    }
+
+    public function reorder(Request $request)
+    {
+        $data = $request->validate([
+            'ids' => 'required|array|min:1',
+            'ids.*' => 'integer|exists:covers,id',
+        ]);
+
+        foreach ($data['ids'] as $index => $id) {
+            Cover::where('id', $id)->update(['order' => $index]);
+        }
+
+        return response()->json(null, 204);
     }
 
     public function destroy(Cover $cover)
