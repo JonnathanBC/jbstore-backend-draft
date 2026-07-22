@@ -9,7 +9,7 @@ use App\Modules\Categories\Models\Family;
 
 class PublicFamilyController extends Controller
 {
-    public function __invoke(Request $request)
+    public function index(Request $request)
     {
         $allowedSortable = ['updated_at'];
 
@@ -18,5 +18,12 @@ class PublicFamilyController extends Controller
             $request,
             $allowedSortable,
         );
+    }
+
+    public function show(Family $family)
+    {
+        return response()->json([
+            'data' => $family,
+        ]);
     }
 }
