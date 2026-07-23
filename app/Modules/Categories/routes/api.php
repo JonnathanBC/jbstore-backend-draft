@@ -10,5 +10,6 @@ Route::prefix('api/public')->group(function () {
     Route::get('/families/{family}/options', PublicFamilyOptionController::class);
     Route::get('/families/{family}/products', PublicFamilyProductController::class);
     Route::apiResource('/families', PublicFamilyController::class)->only(['index', 'show']);
-    Route::get('/categories', PublicCategoryController::class);
+    Route::get('/categories/{category}', [PublicCategoryController::class, 'show']);
+    Route::get('/categories', [PublicCategoryController::class, 'index']);
 });
