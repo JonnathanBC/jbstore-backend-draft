@@ -16,6 +16,13 @@ class PublicFamilyProductController extends Controller
         $query = Product::query()
             ->whereHas('subcategory.category', function ($query) use ($family) {
                 $query->where('family_id', $family->id);
+            })
+            ->when($request->input('orderBy') === 'relevant', function ($query) {
+                $query->orderBy('created_at', 'desc');
+            })->when($request->input('orderBy') === 'major_to_minor', function ($query) {
+                $query->orderBy('price', 'desc');
+            })->when($request->input('orderBy') === 'minor_to_major', function ($query) {
+                $query->orderBy('price', 'asc');
             });
 
         $featureIds = array_filter(
