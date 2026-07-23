@@ -1,6 +1,7 @@
 <?php
 
 use App\Modules\Categories\Http\Controllers\PublicCategoryController;
+use App\Modules\Categories\Http\Controllers\PublicSubcategoryController;
 use App\Modules\Categories\Http\Controllers\PublicFamilyController;
 use App\Modules\Categories\Http\Controllers\PublicFamilyOptionController;
 use App\Modules\Categories\Http\Controllers\PublicFamilyProductController;
@@ -12,4 +13,5 @@ Route::prefix('api/public')->group(function () {
     Route::apiResource('/families', PublicFamilyController::class)->only(['index', 'show']);
     Route::get('/categories/{category}', [PublicCategoryController::class, 'show']);
     Route::get('/categories', [PublicCategoryController::class, 'index']);
+    Route::get('/subcategories/{subcategory}', [PublicSubcategoryController::class, 'show']);
 });
