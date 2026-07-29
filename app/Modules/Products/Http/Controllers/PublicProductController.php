@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class PublicProductController extends Controller
 {
-    public function __invoke(Request $request)
+    public function index(Request $request)
     {
         $query = Product::query()
                 ->orderBy('created_at', 'desc')
@@ -23,5 +23,10 @@ class PublicProductController extends Controller
             $request,
             ['updated_at', 'price'],
         );
+    }
+
+    public function show(Product $product)
+    {
+        return response()->json($product);
     }
 }
