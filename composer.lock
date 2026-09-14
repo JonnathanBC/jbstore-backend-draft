@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d8c4c4ab2fc4eaa94f4161fccd9c6389",
+    "content-hash": "b1b5c4915c76212c57886d1771dde169",
     "packages": [
         {
             "name": "brick/math",
@@ -1116,6 +1116,74 @@
                 }
             ],
             "time": "2025-08-22T14:27:06+00:00"
+        },
+        {
+            "name": "hardevine/shoppingcart",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/JonnathanBC/LaravelShoppingcart.git",
+                "reference": "8cb0f23e08147293f904d02ec46626b557400bfa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JonnathanBC/LaravelShoppingcart/zipball/8cb0f23e08147293f904d02ec46626b557400bfa",
+                "reference": "8cb0f23e08147293f904d02ec46626b557400bfa",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/events": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|^6|^7|^8|^9|^10|^11|^12|^13",
+                "illuminate/session": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|^6|^7|^8|^9|^10|^11|^12|^13",
+                "illuminate/support": "5.1.*|5.2.*|5.3.*|5.4.*|5.5.*|5.6.*|5.7.*|5.8.*|^6|^7|^8|^9|^10|^11|^12|^13"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.0",
+                "orchestra/testbench": "~3.1",
+                "phpunit/phpunit": "~5.0 || ~6.0 || ~7.0 || ~10.0"
+            },
+            "suggest": {
+                "gloudemans/notify": "Simple flash notifications for Laravel"
+            },
+            "default-branch": true,
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Gloudemans\\Shoppingcart\\ShoppingcartServiceProvider"
+                    ],
+                    "aliases": {
+                        "Cart": "Gloudemans\\Shoppingcart\\Facades\\Cart"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Gloudemans\\Shoppingcart\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "Gloudemans\\Tests\\Shoppingcart\\": "tests/"
+                }
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Rob Gloudemans",
+                    "email": "info@robgloudemans.nl"
+                }
+            ],
+            "description": "Laravel Shoppingcart",
+            "keywords": [
+                "laravel",
+                "shoppingcart"
+            ],
+            "support": {
+                "source": "https://github.com/JonnathanBC/LaravelShoppingcart/tree/master"
+            },
+            "time": "2026-09-14T18:34:41+00:00"
         },
         {
             "name": "laravel/framework",
@@ -8730,12 +8798,14 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "hardevine/shoppingcart": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.3"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }

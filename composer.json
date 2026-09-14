@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "hardevine/shoppingcart": "dev-master",
         "laravel/framework": "^13.0",
         "laravel/mcp": "^0.6.7",
         "laravel/sanctum": "^4.0",
@@ -85,5 +86,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": {
+        "shoppingcart": {
+            "type": "vcs",
+            "url": "https://github.com/JonnathanBC/LaravelShoppingcart"
+        }
+    }
 }
