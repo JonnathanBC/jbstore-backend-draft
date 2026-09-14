@@ -248,3 +248,49 @@ protected function isAccessible(User $user, ?string $path = null): bool
 - IMPORTANT: Activate `tailwindcss-development` every time you're working with a Tailwind CSS or styling-related task.
 
 </laravel-boost-guidelines>
+
+# Project Conventions: Identifiers (ID, Slug, UUID)
+
+## Numeric ID as primary key
+
+- Keep auto-increment numeric IDs as the primary key for catalog entities (`products`, `variants`, `categories`, etc.).
+- Why: smaller and sequential indexes, faster joins and foreign keys, easier debugging.
+- Enumeration is not a risk for a public catalog: anyone can already browse every product in the store.
+
+## Slug: only for public URLs
+
+- Store the slug in the database: `$table->string('slug')->unique();`
+- Generate it once with `Str::slug($name)` and handle collisions (e.g. `-2` suffix).
+- Do not regenerate it when the name changes: it breaks shared links and SEO (or store redirects).
+- Use it only in public catalog routes: `Route::get('/products/{product:slug}', ...)`.
+
+## Cart: always use the product ID
+
+- The cart receives and looks up products by `product_id`, NEVER by slug.
+- Why:
+  - The ID is immutable; the slug can change and would break stored cart items.
+  - Primary key lookup is the fastest possible query.
+  - The frontend already has the ID from the catalog response.
+- Validate with a Form Request: `'product_id' => 'required|integer|exists:products,id'`.
+- Never trust price or name from the client: always read them from the database.
+
+```php
+$product = Product::findOrFail($request->integer('product_id'));
+```
+
+## UUID: for private or business-sensitive resources
+
+- Use UUIDs for resources that must not be guessable or that reveal business volume: orders, invoices, payments, addresses.
+- Example: `/orders/1523` reveals total sales and invites trying `/orders/1522`.
+- Prefer ordered UUIDs (Laravel `HasUuids`, UUID v7) or ULIDs: random UUID v4 fragments indexes.
+- Option: keep the numeric PK and add a separate public `uuid` column to expose it.
+- A UUID is NOT authorization: always verify the resource belongs to the authenticated user (policies).
+
+## Summary
+
+| Use case | Identifier |
+|---|---|
+| Primary key / relationships | Numeric ID |
+| Public catalog URLs (SEO) | Slug |
+| Cart, admin, internal operations | Numeric ID |
+| Orders, invoices, payments | UUID (ordered) |

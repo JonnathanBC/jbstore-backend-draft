@@ -1,5 +1,233 @@
 # Carrito de compras — Guía paso a paso
 
+Este documento tiene dos partes:
+
+- **Parte A — Implementación actual:** el carrito usa el paquete `hardevine/shoppingcart` (instalado desde un fork) dentro del módulo `Cart`, como API.
+- **Parte B — Alternativa:** cómo construir un carrito propio sin paquete, con tablas `carts` y `cart_items`.
+
+---
+
+# Parte A — Implementación actual: `hardevine/shoppingcart`
+
+## A.1 Instalación (fork para Laravel 13)
+
+El paquete original soporta hasta Laravel 12. Se usa un fork con `|^13` agregado en `illuminate/support`, `illuminate/session` e `illuminate/events`.
+
+```json
+"require": {
+    "hardevine/shoppingcart": "dev-master"
+},
+"repositories": {
+    "shoppingcart": {
+        "type": "vcs",
+        "url": "https://github.com/JonnathanBC/LaravelShoppingcart"
+    }
+}
+```
+
+- `repositories` le dice a composer **de dónde** bajar el paquete. Composer lo identifica por el `"name"` dentro del `composer.json` del fork (`hardevine/shoppingcart`), no por la URL.
+- `dev-master` significa "último commit de la rama `master`". Los tags del fork (`3.4`, etc.) todavía tienen `^12`. Para usar una versión estable, crear un tag nuevo (ej. `3.5`) y pedir `^3.5`.
+
+Namespace de la facade: `Gloudemans\Shoppingcart\Facades\Cart`.
+
+## A.2 El problema: el paquete guarda en sesión
+
+`Cart::add()` guarda en la **sesión**. Las rutas con middleware `api` no tienen sesión persistente, así que el carrito se pierde al terminar cada request.
+
+**Solución del propio paquete:** `Cart::store($identifier)` y `Cart::restore($identifier)` guardan y recuperan el carrito en la tabla `shoppingcart`.
+
+```bash
+php artisan vendor:publish --provider="Gloudemans\Shoppingcart\ShoppingcartServiceProvider" --tag=migrations
+php artisan migrate
+```
+
+Patrón en **cada** request:
+
+```
+1. Cart::restore($user->id)   ← traer de la base a memoria
+2. Cart::add / remove / ...   ← operar
+3. Cart::store($user->id)     ← guardar en la base
+```
+
+Por eso las rutas usan `auth:sanctum`: se necesita el id del usuario como identificador.
+
+## A.3 Rutas
+
+`app/Modules/Cart/Routes/api.php`
+
+```php
+Route::prefix('api/cart')->middleware('auth:sanctum')->group(function () {
+    Route::post('/items', [CartController::class, 'store']);
+    Route::delete('/items/{rowId}', [CartController::class, 'destroy']);
+});
+```
+
+- `POST /api/cart/items` → body `{ "product_id": 42, "quantity": 2 }`.
+- `DELETE /api/cart/items/{rowId}` → `rowId` es el hash que el paquete genera por cada línea (se ve en `Cart::content()`), NO el id del producto.
+
+## A.4 Request y controller
+
+`AddToCartRequest`:
+
+```php
+public function rules(): array
+{
+    return [
+        'product_id' => 'required|integer|exists:products,id',
+        'quantity' => 'required|integer|min:1',
+    ];
+}
+```
+
+Controller:
+
+```php
+public function store(AddToCartRequest $request)
+{
+    $user = $request->user();
+    $product = Product::findOrFail($request->integer('product_id'));
+
+    Cart::restore($user->id);
+
+    Cart::add([
+        'id' => $product->id,
+        'name' => $product->name,
+        'qty' => $request->integer('quantity'),
+        'price' => $product->price,
+    ]);
+
+    Cart::store($user->id);
+
+    return response()->json([
+        'items' => Cart::content(),
+        'total' => Cart::total(),
+    ], 201);
+}
+```
+
+Reglas:
+
+- Buscar el producto por **id**, nunca por slug (ver `ia-docs/best-practices.md`).
+- El array de `Cart::add` necesita **`id`, `name`, `qty` y `price`**. Si falta alguna, falla con `Undefined array key`.
+- `price` y `name` salen de la base, **nunca** del request.
+- `$request->integer()` convierte a `int`. La regla `integer` solo valida, no convierte.
+- Usar `$product->id`, NUNCA `$product->get('id')`: `get()` se reenvía al query builder y ejecuta `SELECT id FROM products` sobre toda la tabla.
+
+## A.5 Instancias: varios carritos por usuario
+
+### El concepto
+
+Una **instancia** es un **carrito con nombre**. El paquete no maneja "un" carrito, sino varios contenedores independientes, cada uno identificado por un nombre. Si no indicás ninguno, usa la instancia `default`.
+
+Pensalo como un supermercado: el mismo cliente puede tener **un carrito de compra** y **una lista de deseos**. Son dos contenedores distintos con productos distintos, pero son del mismo cliente.
+
+Casos típicos:
+
+| Instancia | Para qué |
+|---|---|
+| `default` / `shopping` | Carrito de compra |
+| `wishlist` | Lista de deseos |
+| `compare` | Productos para comparar |
+| `saved` | "Guardar para después" |
+
+### Cómo funciona por dentro
+
+`Cart::instance('wishlist')` cambia la clave donde se guarda el contenido a `cart.wishlist`. Todo lo que hagas después (`add`, `remove`, `content`, `total`, `store`, `restore`) opera **solo sobre esa instancia**.
+
+```php
+Cart::instance('shopping')->add([
+    'id' => 1, 'name' => 'Zapatilla', 'qty' => 1, 'price' => 100,
+]);
+
+Cart::instance('wishlist')->add([
+    'id' => 2, 'name' => 'Remera', 'qty' => 1, 'price' => 50,
+]);
+
+Cart::instance('shopping')->count();   // 1
+Cart::instance('wishlist')->count();   // 1
+Cart::instance('shopping')->total();   // solo la zapatilla
+```
+
+### En la base de datos
+
+La tabla `shoppingcart` tiene clave primaria compuesta por `identifier` + `instance`. Así, el mismo usuario puede tener una fila por instancia:
+
+| identifier | instance | content |
+|---|---|---|
+| 7 | shopping | (items serializados) |
+| 7 | wishlist | (items serializados) |
+
+`store` y `restore` usan la **instancia activa** en ese momento. Por eso hay que elegir la instancia **antes** de llamarlos.
+
+### Patrón en la API
+
+```php
+Cart::instance('wishlist')->restore($user->id);
+Cart::instance('wishlist')->add([...]);
+Cart::instance('wishlist')->store($user->id);
+```
+
+Rutas sugeridas: un recurso por instancia.
+
+```php
+Route::prefix('api/wishlist')->middleware('auth:sanctum')->group(function () {
+    Route::post('/items', [WishlistController::class, 'store']);
+    Route::delete('/items/{rowId}', [WishlistController::class, 'destroy']);
+});
+```
+
+### ⚠️ Gotcha: la instancia queda "pegada"
+
+La facade `Cart` es un **singleton** durante el request. Si llamás `Cart::instance('wishlist')`, TODAS las llamadas siguientes en ese request van a `wishlist`, aunque no lo repitas:
+
+```php
+Cart::instance('wishlist')->add([...]);
+Cart::content();   // ← devuelve la WISHLIST, no el carrito de compra
+```
+
+Reglas para evitarlo:
+
+- Indicar **siempre** la instancia de forma explícita: `Cart::instance('shopping')->...`.
+- Usar constantes para no escribir mal el nombre: un typo como `'wishlits'` crea otra instancia vacía sin avisar.
+
+```php
+final class CartInstance
+{
+    public const SHOPPING = 'shopping';
+    public const WISHLIST = 'wishlist';
+}
+
+Cart::instance(CartInstance::WISHLIST)->add([...]);
+```
+
+### Mover un producto entre instancias
+
+Ejemplo: de la wishlist al carrito de compra.
+
+```php
+Cart::instance(CartInstance::WISHLIST)->restore($user->id);
+Cart::instance(CartInstance::SHOPPING)->restore($user->id);
+
+$item = Cart::instance(CartInstance::WISHLIST)->get($rowId);
+
+Cart::instance(CartInstance::SHOPPING)->add([
+    'id' => $item->id,
+    'name' => $item->name,
+    'qty' => 1,
+    'price' => Product::findOrFail($item->id)->price,
+]);
+Cart::instance(CartInstance::WISHLIST)->remove($rowId);
+
+Cart::instance(CartInstance::SHOPPING)->store($user->id);
+Cart::instance(CartInstance::WISHLIST)->store($user->id);
+```
+
+El precio se vuelve a leer de la base, porque puede haber cambiado desde que se guardó en la wishlist.
+
+---
+
+# Parte B — Alternativa: carrito propio sin paquete
+
 Guía para construir un carrito propio en un módulo `Cart`, siguiendo la misma estructura que `Products`, `Categories` y `Users`.
 
 ---
