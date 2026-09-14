@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Modules\Cart\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Modules\Cart\Http\Requests\AddToCartRequest;
+use App\Modules\Products\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+
+use Gloudemans\Shoppingcart\Facades\Cart;
+
+class CartController extends Controller
+{
+    private const INSTANCE = 'shopping';
+
+    public function index(Request $request): JsonResponse
+    {
+        $this->restore($request);
+
+        return $this->cartResponse();
+    }
+
+    public function store(AddToCartRequest $request): JsonResponse
+    {
+        $product = Product::findOrFail($request->integer('product_id'));
+
+        $this->restore($request);
+
+        Cart::instance(self::INSTANCE)->add([
+            'id' => $product->id,
+            'name' => $product->name,
+            'qty' => $request->integer('quantity'),
+            'price' => $product->price,
+            'options' => [
+                'image' => $product->image,
+                'sku' => $product->sku,
+                'features' => [],
+            ],
+        ]);
+
+        $this->persist($request);
+
+        return $this->cartResponse(201);
+    }
+
+    public function destroy(Request $request, string $rowId): JsonResponse
+    {
+        $this->restore($request);
+
+        $cart = Cart::instance(self::INSTANCE);
+
+        if (! $cart->content()->has($rowId)) {
+            return response()->json(['message' => 'Item no encontrado'], 404);
+        }
+
+        $cart->remove($rowId);
+
+        $this->persist($request);
+
+        return $this->cartResponse();
+    }
+
+    /**
+     * Carga el carrito guardado del usuario en la sesión del request.
+     */
+    private function restore(Request $request): void
+    {
+        Cart::instance(self::INSTANCE)->restore($request->user()->id);
+    }
+
+    /**
+     * Guarda el carrito en DB (store borra el registro previo e inserta el nuevo).
+     */
+    private function persist(Request $request): void
+    {
+        Cart::instance(self::INSTANCE)->store($request->user()->id);
+    }
+
+    private function cartResponse(int $status = 200): JsonResponse
+    {
+        $cart = Cart::instance(self::INSTANCE);
+
+        return response()->json([
+            'items' => $cart->content()->values(),
+            'count' => $cart->count(),
+            'subtotal' => $cart->subtotal(2, '.', ''),
+        ], $status);
+    }
+}

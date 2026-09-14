@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @method static Product findOrFail(mixed $id, array $columns = [])
+ */
 class Product extends Model
 {
     use HasFactory;

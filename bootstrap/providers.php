@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Cart\CartServiceProvider;
 use App\Modules\Categories\CategoriesServiceProvider;
 use App\Modules\Products\ProductsServiceProvider;
 use App\Modules\Users\UsersServiceProvider;
@@ -10,4 +11,5 @@ return [
     UsersServiceProvider::class,
     CategoriesServiceProvider::class,
     ProductsServiceProvider::class,
+    CartServiceProvider::class,
 ];
