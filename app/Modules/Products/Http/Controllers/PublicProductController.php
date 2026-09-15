@@ -3,6 +3,7 @@
 namespace App\Modules\Products\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Products\Http\Resources\PublicProductResource;
 use App\Modules\Products\Models\Product;
 use Illuminate\Http\Request;
 
@@ -27,6 +28,6 @@ class PublicProductController extends Controller
 
     public function show(Product $product)
     {
-        return response()->json($product);
+        return new PublicProductResource($product->load('variants'));
     }
 }
