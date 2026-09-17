@@ -28,6 +28,6 @@ class PublicProductController extends Controller
 
     public function show(Product $product)
     {
-        return new PublicProductResource($product->load('variants'));
+        return new PublicProductResource($product->load(['variants', 'options']));
     }
 }

@@ -20,6 +20,7 @@ class AddToCartRequest extends FormRequest
         return [
             'product_id' => 'required|integer|exists:products,id',
             'quantity' => 'required|integer|min:1',
+            'selected_features' => 'array|exists:features,id',
         ];
     }
 }

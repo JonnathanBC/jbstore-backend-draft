@@ -9,6 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use Gloudemans\Shoppingcart\Facades\Cart;
+use Illuminate\Support\Facades\Log;
 
 class CartController extends Controller
 {
@@ -23,19 +24,28 @@ class CartController extends Controller
 
     public function store(AddToCartRequest $request): JsonResponse
     {
-        $product = Product::findOrFail($request->integer('product_id'));
+        $product = Product::with('variants.features')->findOrFail($request->integer('product_id'));
+        $selectedFeatures = $request->input('selected_features');
+
+        // Buscar la variante que coincide
+        $variant = $product->variants->filter(function($variant) use ($selectedFeatures) {
+            return !array_diff($variant->features->pluck('id')->toArray(), $selectedFeatures);
+        })->first();
+        Log::info('variant', [$variant]);
 
         $this->restore($request);
 
         Cart::instance(self::INSTANCE)->add([
-            'id' => $product->id,
-            'name' => $product->name,
-            'qty' => $request->integer('quantity'),
-            'price' => $product->price,
+            'id'    => $product->id,
+            'name'  => $product->name,
+            'qty'   => $request->integer('quantity'),
+            'price' => $variant->price ?? $product->price,
             'options' => [
-                'image' => $product->image,
-                'sku' => $product->sku,
-                'features' => [],
+                // 'variant_id' => $variant->id,
+                // 'image'      => $variant->image ?? $product->image,
+                // 'sku'        => $variant->sku ?? $product->sku,
+                // // Extrae [id => description] directo de la relación en memoria
+                // 'features'   => $variant->features->pluck('description', 'id')->toArray(),
             ],
         ]);
 

@@ -9,4 +9,3 @@ Route::prefix('api/cart')->middleware('auth:sanctum')->group(function () {
     Route::post('/items', [CartController::class, 'store']);
     Route::delete('/items/{rowId}', [CartController::class, 'destroy']);
 });
-
