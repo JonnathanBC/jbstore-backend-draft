@@ -39,17 +39,17 @@ class CartController extends Controller
             'id'    => $product->id,
             'name'  => $product->name,
             'qty'   => $request->integer('quantity'),
-            'price' => $variant->price ?? $product->price,
+            'price' => $product->price,
             'options' => [
-                // 'variant_id' => $variant->id,
-                // 'image'      => $variant->image ?? $product->image,
-                // 'sku'        => $variant->sku ?? $product->sku,
-                // // Extrae [id => description] directo de la relación en memoria
-                // 'features'   => $variant->features->pluck('description', 'id')->toArray(),
+                'variant_id' => $variant->id,
+                'image'      => $variant->image,
+                'sku'        => $variant->sku,
+                // Extrae [id => description] directo de la relación en memoria
+                'features'   => $variant->features->pluck('description', 'id')->toArray(),
             ],
         ]);
 
-        $this->persist($request);
+        // $this->persist($request);
 
         return $this->cartResponse(201);
     }

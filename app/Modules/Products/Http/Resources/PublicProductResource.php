@@ -38,13 +38,13 @@ class PublicProductResource extends JsonResource
                         'id' => $option->id,
                         'name' => $option->name,
                         'type' => $option->type,
-                        'features' => $option->features->map(function ($feature) {
+                        'features' => collect($option->pivot->features)->map(function ($feature) {
                             return [
-                                'id' => $feature->id,
-                                'value' => $feature->value,
-                                'description' => $feature->description,
+                                'id' => $feature['id'],
+                                'value' => $feature['value'],
+                                'description' => $feature['description'],
                             ];
-                        }),
+                        })->values(),
                     ];
                 });
             }),
