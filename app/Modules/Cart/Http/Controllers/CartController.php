@@ -9,7 +9,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use Gloudemans\Shoppingcart\Facades\Cart;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
@@ -18,7 +18,6 @@ class CartController extends Controller
     public function index(Request $request): JsonResponse
     {
         $this->restore($request);
-
         return $this->cartResponse();
     }
 
@@ -31,25 +30,24 @@ class CartController extends Controller
         $variant = $product->variants->filter(function($variant) use ($selectedFeatures) {
             return !array_diff($variant->features->pluck('id')->toArray(), $selectedFeatures);
         })->first();
-        Log::info('variant', [$variant]);
 
         $this->restore($request);
 
         Cart::instance(self::INSTANCE)->add([
-            'id'    => $product->id,
-            'name'  => $product->name,
-            'qty'   => $request->integer('quantity'),
-            'price' => $product->price,
-            'options' => [
-                'variant_id' => $variant->id,
-                'image'      => $variant->image,
-                'sku'        => $variant->sku,
-                // Extrae [id => description] directo de la relación en memoria
-                'features'   => $variant->features->pluck('description', 'id')->toArray(),
-            ],
+        'id'    => $product->id,
+        'name'  => $product->name,
+        'qty'   => $request->integer('quantity'),
+        'price' => $product->price,
+        'options' => $variant ? [
+            'variant_id' => $variant->id,
+            'image'      => $variant->image,
+            'sku'        => $variant->sku,
+            // Extrae [id => description] directo de la relación en memoria
+            'features'   => $variant->features->pluck('description', 'id')->toArray(),
+            ] : [],
         ]);
 
-        // $this->persist($request);
+        $this->persist($request);
 
         return $this->cartResponse(201);
     }
@@ -76,7 +74,34 @@ class CartController extends Controller
      */
     private function restore(Request $request): void
     {
-        Cart::instance(self::INSTANCE)->restore($request->user()->id);
+        $userId = $request->user()->id;
+        $stored = DB::table(config('cart.database.table'))
+            ->where('identifier', $userId)
+            ->where('instance', self::INSTANCE)
+            ->first();
+
+        if (! $stored) {
+            return;
+        }
+
+        $serialized = base64_decode($stored->content, true);
+        $storedContent = $serialized === false ? false : @unserialize($serialized);
+
+        if (! $storedContent instanceof \Illuminate\Support\Collection) {
+            DB::table(config('cart.database.table'))
+                ->where('identifier', $userId)
+                ->where('instance', self::INSTANCE)
+                ->delete();
+
+            return;
+        }
+
+        $cart = Cart::instance(self::INSTANCE);
+        $cart->destroy();
+
+        foreach ($storedContent as $cartItem) {
+            $cart->add($cartItem);
+        }
     }
 
     /**
@@ -84,7 +109,19 @@ class CartController extends Controller
      */
     private function persist(Request $request): void
     {
-        Cart::instance(self::INSTANCE)->store($request->user()->id);
+        $userId = $request->user()->id;
+        $content = base64_encode(serialize(Cart::instance(self::INSTANCE)->content()));
+
+        DB::table(config('cart.database.table'))->updateOrInsert(
+            [
+                'identifier' => $userId,
+                'instance' => self::INSTANCE,
+            ],
+            [
+                'content' => $content,
+                'created_at' => now(),
+            ],
+        );
     }
 
     private function cartResponse(int $status = 200): JsonResponse
