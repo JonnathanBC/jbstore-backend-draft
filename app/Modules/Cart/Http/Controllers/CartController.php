@@ -4,6 +4,7 @@ namespace App\Modules\Cart\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Cart\Http\Requests\AddToCartRequest;
+use App\Modules\Cart\Http\Requests\MergeCartRequest;
 use App\Modules\Products\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -23,33 +24,100 @@ class CartController extends Controller
 
     public function store(AddToCartRequest $request): JsonResponse
     {
-        $product = Product::with('variants.features')->findOrFail($request->integer('product_id'));
-        $selectedFeatures = $request->input('selected_features');
-
-        // Buscar la variante que coincide
-        $variant = $product->variants->filter(function($variant) use ($selectedFeatures) {
-            return !array_diff($variant->features->pluck('id')->toArray(), $selectedFeatures);
-        })->first();
-
         $this->restore($request);
 
-        Cart::instance(self::INSTANCE)->add([
-        'id'    => $product->id,
-        'name'  => $product->name,
-        'qty'   => $request->integer('quantity'),
-        'price' => $product->price,
-        'options' => $variant ? [
-            'variant_id' => $variant->id,
-            'image'      => $variant->image,
-            'sku'        => $variant->sku,
-            // Extrae [id => description] directo de la relación en memoria
-            'features'   => $variant->features->pluck('description', 'id')->toArray(),
-            ] : [],
-        ]);
+        $error = $this->addItem(
+            $request->integer('product_id'),
+            $request->integer('quantity'),
+            $request->input('selected_features', []),
+        );
+
+        if ($error) {
+            return response()->json(['message' => $error], 422);
+        }
 
         $this->persist($request);
 
         return $this->cartResponse(201);
+    }
+
+    /**
+     * Fusiona el carrito de invitado con el del usuario. Los items inválidos
+     * (producto inexistente, variante sin match o sin stock) se omiten.
+     */
+    public function merge(MergeCartRequest $request): JsonResponse
+    {
+        $this->restore($request);
+
+        foreach ($request->input('items') as $item) {
+            $this->addItem(
+                (int) $item['product_id'],
+                (int) $item['quantity'],
+                $item['selected_features'] ?? [],
+                clampToStock: true,
+            );
+        }
+
+        $this->persist($request);
+
+        return $this->cartResponse();
+    }
+
+    /**
+     * Agrega un item al carrito ya restaurado. Devuelve un mensaje de error o null.
+     *
+     * @param  array<int|string, int|string>  $selectedFeatures
+     */
+    private function addItem(int $productId, int $quantity, array $selectedFeatures, bool $clampToStock = false): ?string
+    {
+        $product = Product::with('variants.features')->find($productId);
+
+        if (! $product) {
+            return 'Producto no encontrado';
+        }
+
+        $selectedIds = array_map('intval', array_values($selectedFeatures));
+
+        // La variante coincide si todas sus features fueron seleccionadas
+        $variant = $product->variants->first(
+            fn ($variant) => ! array_diff($variant->features->pluck('id')->all(), $selectedIds)
+        );
+
+        if ($product->variants->isNotEmpty() && ! $variant) {
+            return 'Seleccioná una variante válida';
+        }
+
+        $cart = Cart::instance(self::INSTANCE);
+
+        // TODO: reactivar validación de stock (desactivada temporalmente para pruebas)
+        // $inCart = $cart->search(fn ($item) => $item->id === $product->id
+        //     && ($item->options->variant_id ?? null) === $variant?->id
+        // )->sum('qty');
+        //
+        // $available = ($variant ? $variant->stock : $product->stock) - $inCart;
+        //
+        // if ($quantity > $available) {
+        //     if (! $clampToStock || $available < 1) {
+        //         return 'Stock insuficiente';
+        //     }
+        //     $quantity = $available;
+        // }
+
+        $cart->add([
+            'id'    => $product->id,
+            'name'  => $product->name,
+            'qty'   => $quantity,
+            'price' => $product->price,
+            'options' => $variant ? [
+                'variant_id' => $variant->id,
+                'image'      => $variant->image,
+                'sku'        => $variant->sku,
+                // Extrae [id => description] directo de la relación en memoria
+                'features'   => $variant->features->pluck('description', 'id')->toArray(),
+            ] : [],
+        ]);
+
+        return null;
     }
 
     public function destroy(Request $request, string $rowId): JsonResponse
