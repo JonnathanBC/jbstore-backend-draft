@@ -76,11 +76,20 @@ class CartController extends Controller
             return 'Producto no encontrado';
         }
 
-        $selectedIds = array_map('intval', array_values($selectedFeatures));
+        $selectedFeatures = collect($selectedFeatures)
+            ->mapWithKeys(fn ($featureId, $optionId) => [
+                (int) $optionId => (int) $featureId,
+            ]);
 
-        // La variante coincide si todas sus features fueron seleccionadas
+        // La variante debe coincidir exactamente por option_id y feature_id.
         $variant = $product->variants->first(
-            fn ($variant) => ! array_diff($variant->features->pluck('id')->all(), $selectedIds)
+            fn ($variant) => $variant->features->count() === $selectedFeatures->count()
+                && $selectedFeatures->every(
+                    fn ($featureId, $optionId) => $variant->features->contains(
+                        fn ($feature) => (int) $feature->option_id === $optionId
+                            && (int) $feature->id === $featureId
+                    )
+                )
         );
 
         if ($product->variants->isNotEmpty() && ! $variant) {
@@ -114,7 +123,11 @@ class CartController extends Controller
                 'sku'        => $variant->sku,
                 // Extrae [id => description] directo de la relación en memoria
                 'features'   => $variant->features->pluck('description', 'id')->toArray(),
-            ] : [],
+            ] : [
+                'image'      => $product->image,
+                'sku'        => $product->sku,
+                'features'   => [],
+            ],
         ]);
 
         return null;
