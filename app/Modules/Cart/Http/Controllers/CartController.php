@@ -150,6 +150,17 @@ class CartController extends Controller
         return $this->cartResponse();
     }
 
+    public function clear(Request $request): JsonResponse
+    {
+        $this->restore($request);
+
+        Cart::instance(self::INSTANCE)->destroy();
+
+        $this->persist($request);
+
+        return $this->cartResponse();
+    }
+
     /**
      * Carga el carrito guardado del usuario en la sesión del request.
      */
@@ -214,5 +225,35 @@ class CartController extends Controller
             'count' => $cart->count(),
             'subtotal' => $cart->subtotal(2, '.', ''),
         ], $status);
+    }
+
+
+    public function update(Request $request, string $rowId): JsonResponse
+    {
+        $request->validate([
+            'operation' => 'required|in:increase,decrease',
+        ]);
+
+        $this->restore($request);
+
+        $cart = Cart::instance(self::INSTANCE);
+
+        if (! $cart->content()->has($rowId)) {
+            return response()->json(['message' => 'Item no encontrado'], 404);
+        }
+
+        $item = $cart->get($rowId);
+
+        if ($request->input('operation') === 'decrease' && $item->qty === 1) {
+            $cart->remove($rowId);
+            $updatedItem = null;
+        } else {
+            $delta = $request->input('operation') === 'increase' ? 1 : -1;
+            $updatedItem = $cart->update($rowId, $item->qty + $delta);
+        }
+
+        $this->persist($request);
+
+        return response()->json(['item' => $updatedItem]);
     }
 }
