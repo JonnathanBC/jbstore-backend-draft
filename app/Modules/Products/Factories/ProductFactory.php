@@ -17,7 +17,7 @@ class ProductFactory extends Factory
      *
      * @return array<string, mixed>
      */
-    private static function downloadImage(): string
+    private static function downloadImage(): string|array
     {
         $dir = storage_path('app/public/products');
 

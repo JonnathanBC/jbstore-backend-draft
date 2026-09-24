@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Auth\AuthServiceProvider;
 use App\Modules\Cart\CartServiceProvider;
 use App\Modules\Categories\CategoriesServiceProvider;
 use App\Modules\Products\ProductsServiceProvider;
@@ -12,4 +13,5 @@ return [
     CategoriesServiceProvider::class,
     ProductsServiceProvider::class,
     CartServiceProvider::class,
+    AuthServiceProvider::class,
 ];

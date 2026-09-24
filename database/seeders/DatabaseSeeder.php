@@ -24,8 +24,12 @@ class DatabaseSeeder extends Seeder
         Storage::makeDirectory('products');
 
         User::factory()->create([
-            'name' => 'Test User',
+            'name' => 'Jonnathan',
+            'last_name' => 'Baculima Cuesta',
+            'document_type' => 'CI',
+            'document_number' => '1234567890',
             'email' => 'test@example.com',
+            'phone' => '0987654321',
             'role' => UserRoleEnum::Admin,
         ]);
 
@@ -34,6 +38,6 @@ class DatabaseSeeder extends Seeder
             OptionSeeder::class,
         ]);
 
-        Product::factory(999)->create();
+        Product::factory(600)->create();
     }
 }

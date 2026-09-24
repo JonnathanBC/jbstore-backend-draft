@@ -2,11 +2,12 @@
 
 namespace App\Modules\Auth\Http\Controllers;
 
+use Illuminate\Http\Request;
+
 use App\Modules\Auth\Actions\LoginAction;
 use App\Modules\Auth\Actions\RegisterAction;
 use App\Modules\Auth\Http\Requests\LoginRequest;
 use App\Modules\Auth\Http\Requests\RegisterRequest;
-use Illuminate\Http\Request;
 
 class AuthController
 {

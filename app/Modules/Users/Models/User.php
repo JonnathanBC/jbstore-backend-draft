@@ -19,7 +19,18 @@ class User extends Authenticatable
         return \App\Modules\Users\Factories\UserFactory::new();
     }
 
-    protected $fillable = ['name', 'email', 'password', 'google_id', 'avatar', 'role'];
+    protected $fillable = [
+        'name',
+        'last_name',
+        'document_type',
+        'document_number',
+        'email',
+        'phone',
+        'password',
+        'google_id',
+        'avatar',
+        'role'
+    ];
 
     protected function casts(): array
     {
