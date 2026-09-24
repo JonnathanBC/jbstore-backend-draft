@@ -1,23 +1,15 @@
 <?php
 
-use App\Modules\Users\Http\Controllers\AuthController;
-use App\Modules\Users\Http\Controllers\GoogleAuthController;
 use App\Modules\Users\Http\Controllers\PublicCoverController;
+use App\Modules\Users\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('public')->group(function () {
     Route::get('/covers', PublicCoverController::class);
 });
 
-Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
-
-    Route::get('/google', [GoogleAuthController::class, 'redirect']);
-    Route::get('/google/callback', [GoogleAuthController::class, 'callback']);
-
+Route::prefix('user')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout']);
-        Route::get('/me', [AuthController::class, 'user']);
+        Route::get('/me', [UserController::class, 'me']);
     });
 });
