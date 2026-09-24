@@ -2,6 +2,7 @@
 
 namespace App\Modules\Users\Models;
 
+use App\Modules\Addresses\Models\Address;
 use App\Modules\Users\Enums\UserRoleEnum;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -39,5 +40,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRoleEnum::class,
         ];
+    }
+
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
     }
 }
