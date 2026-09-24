@@ -26,6 +26,20 @@ class PublicProductController extends Controller
         );
     }
 
+    public function byIds(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array', 'max:50'],
+            'ids.*' => ['integer', 'min:1'],
+        ]);
+
+        $products = Product::query()
+            ->whereIn('id', array_unique($validated['ids']))
+            ->get();
+
+        return PublicProductResource::collection($products);
+    }
+
     public function show(Product $product)
     {
         return new PublicProductResource($product->load(['variants', 'options']));
