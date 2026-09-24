@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Modules\Users\Http\Controllers;
+namespace App\Modules\Auth\Http\Controllers;
 
 use App\Modules\Users\Models\User;
 
-use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
 class GoogleAuthController
@@ -16,7 +15,7 @@ class GoogleAuthController
         return response()->json(['url' => $url]);
     }
 
-    public function callback(Request $request)
+    public function callback()
     {
         $googleUser = Socialite::driver('google')->stateless()->user();
 

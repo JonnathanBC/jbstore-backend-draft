@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Modules\Users\Http\Controllers;
+namespace App\Modules\Auth\Http\Controllers;
 
-use App\Modules\Users\Actions\LoginAction;
-use App\Modules\Users\Actions\RegisterAction;
-use App\Modules\Users\Http\Requests\LoginRequest;
-use App\Modules\Users\Http\Requests\RegisterRequest;
-
+use App\Modules\Auth\Actions\LoginAction;
+use App\Modules\Auth\Actions\RegisterAction;
+use App\Modules\Auth\Http\Requests\LoginRequest;
+use App\Modules\Auth\Http\Requests\RegisterRequest;
 use Illuminate\Http\Request;
 
 class AuthController
@@ -30,10 +29,5 @@ class AuthController
         $request->user()->currentAccessToken()->delete();
 
         return response()->noContent();
-    }
-
-    public function user(Request $request)
-    {
-        return response()->json($request->user());
     }
 }
