@@ -24,6 +24,7 @@ class StoreAddressRequest extends FormRequest
             'country' => ['required', 'string', 'size:2'],
             'reference' => ['nullable', 'string', 'max:255'],
             'phone' => ['required', 'string', 'regex:/^\d{6,15}$/'],
+            'is_default' => ['nullable', 'boolean'],
         ];
     }
 }

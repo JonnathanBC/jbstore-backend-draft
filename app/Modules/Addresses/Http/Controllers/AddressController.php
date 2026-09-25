@@ -28,7 +28,7 @@ class AddressController extends Controller
         $address = Address::create([
             ...$data,
             'user_id' => $user->id,
-            'receiver' => $user->id,
+            'receiver' => 1, // true
             'receiver_info' => [
                 'name' => trim($user->name . ' ' . $user->last_name),
                 'phone' => $data['phone'],
