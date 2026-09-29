@@ -3,7 +3,6 @@
 namespace App\Modules\Addresses\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreAddressRequest extends FormRequest
 {
@@ -15,7 +14,6 @@ class StoreAddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type' => ['required', 'string', Rule::in(['shipping', 'billing'])],
             'address_line_1' => ['required', 'string', 'max:255'],
             'address_line_2' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
