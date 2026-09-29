@@ -2,18 +2,22 @@
 
 namespace App\Modules\Addresses\Models;
 
-use App\Modules\Users\Models\User;
+use App\Concerns\BelongsToUser;
+use App\Modules\Addresses\Factories\AddressFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class Address extends Model
 {
-    use HasFactory;
+    use BelongsToUser, HasFactory;
+
+    protected static function newFactory()
+    {
+        return AddressFactory::new();
+    }
 
     protected $fillable = [
-        'user_id',
-        'type',
         'address_line_1',
         'address_line_2',
         'province',
@@ -35,8 +39,19 @@ class Address extends Model
         ];
     }
 
-    public function user(): BelongsTo
+    /**
+     * Marca esta dirección como predeterminada y desmarca las demás del usuario (una sola predeterminada por usuario).
+     * Filtra por el user_id de la propia dirección: no depende del global scope,
+     * así funciona igual desde un job o un comando (sin usuario autenticado).
+     */
+    public function markAsDefault(): void
     {
-        return $this->belongsTo(User::class);
+        DB::transaction(function () {
+            static::where('user_id', $this->user_id)
+                ->whereKeyNot($this->getKey())
+                ->update(['is_default' => false]);
+
+            $this->update(['is_default' => true]);
+        });
     }
 }

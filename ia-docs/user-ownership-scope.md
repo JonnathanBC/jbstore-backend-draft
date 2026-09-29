@@ -326,8 +326,8 @@ Por cada modelo con `BelongsToUser`:
 
 ## Hallazgos de la revisión (a resolver aparte)
 
-- **`is_default` sin regla de unicidad**: `AddressController::store` guarda el `is_default` que manda el cliente sin desmarcar las otras direcciones. Puede haber varias predeterminadas. La lógica de `setDefault` (transacción) tiene que reutilizarse en `store`.
-- **No existe endpoint `setDefault`** ni `update/destroy` de direcciones. Conviene crearlos **después** de aplicar el scope.
+- **`is_default` (modelo Amazon)**: las direcciones no tienen tipo y cada usuario tiene UNA sola predeterminada. `Address::markAsDefault()` (transacción) se reutiliza en `store` y `setDefault`; la primera dirección del usuario queda predeterminada automáticamente.
+- Existe `PATCH /api/addresses/{address}/default`; no existen `update/destroy` de direcciones. Conviene crearlos **después** de aplicar el scope.
 - **`UserPolicy`** usa `$authUser->admin`, que no existe en `User`. El rol es `role === UserRoleEnum::Admin`.
 - **`CoverObserver`** parece corrupto: namespace y nombre de clase rotos (`App\Modules\Users\.s`, `class Cover.`). Revisar si carga.
 - **`Route::resource('/products', PublicProductController::class)`** en `Products/Routes/api.php` registra también `store/update/destroy`, pero el controller solo tiene `index/show/byIds`. No es un agujero de escritura, pero expone rutas que terminan en error. Usar `->only(['index', 'show'])`.

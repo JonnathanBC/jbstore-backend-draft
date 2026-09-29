@@ -8,4 +8,5 @@ Route::prefix('api/addresses')
     ->group(function () {
         Route::get('/', [AddressController::class, 'index']);
         Route::post('/', [AddressController::class, 'store']);
+        Route::patch('/{address}/default', [AddressController::class, 'setDefault']);
     });
