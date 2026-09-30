@@ -5,6 +5,7 @@ namespace App\Modules\Addresses\Http\Controllers;
 use App\Modules\Addresses\Http\Requests\StoreAddressRequest;
 use App\Modules\Addresses\Models\Address;
 use App\Http\Controllers\Controller;
+use App\Modules\Addresses\Http\Requests\UpdateAddressRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -47,6 +48,23 @@ class AddressController extends Controller
     public function setDefault(Address $address): JsonResponse
     {
         $address->markAsDefault();
+
+        return response()->json($address->fresh());
+    }
+
+    public function update(UpdateAddressRequest $request, Address $address): JsonResponse
+    {
+        $data = $request->validated();
+        $makeDefault = (bool) ($data['is_default'] ?? false);
+        unset($data['is_default']);
+
+        DB::transaction(function () use ($address, $data, $makeDefault) {
+            $address->update($data);
+
+            if ($makeDefault) {
+                $address->markAsDefault();
+            }
+        });
 
         return response()->json($address->fresh());
     }
