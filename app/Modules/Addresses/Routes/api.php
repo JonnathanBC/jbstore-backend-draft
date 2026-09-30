@@ -9,5 +9,6 @@ Route::prefix('api/addresses')
         Route::get('/', [AddressController::class, 'index']);
         Route::post('/', [AddressController::class, 'store']);
         Route::patch('/{address}', [AddressController::class, 'update']);
+        Route::delete('/{address}', [AddressController::class, 'destroy']);
         Route::patch('/{address}/default', [AddressController::class, 'setDefault']);
     });

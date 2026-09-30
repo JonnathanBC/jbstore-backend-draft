@@ -68,4 +68,10 @@ class AddressController extends Controller
 
         return response()->json($address->fresh());
     }
+
+    public function destroy(Address $address): JsonResponse
+    {
+        $address->delete();
+        return response()->json(null, 204);
+    }
 }
