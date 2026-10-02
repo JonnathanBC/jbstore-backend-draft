@@ -5,16 +5,18 @@ namespace App\Modules\Cart\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Cart\Http\Requests\AddToCartRequest;
 use App\Modules\Cart\Http\Requests\MergeCartRequest;
+use App\Modules\Cart\Services\CartService;
 use App\Modules\Products\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 use Gloudemans\Shoppingcart\Facades\Cart;
-use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    private const INSTANCE = 'shopping';
+    private const INSTANCE = CartService::INSTANCE;
+
+    public function __construct(private CartService $cartService) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -166,34 +168,7 @@ class CartController extends Controller
      */
     private function restore(Request $request): void
     {
-        $userId = $request->user()->id;
-        $stored = DB::table(config('cart.database.table'))
-            ->where('identifier', $userId)
-            ->where('instance', self::INSTANCE)
-            ->first();
-
-        if (! $stored) {
-            return;
-        }
-
-        $serialized = base64_decode($stored->content, true);
-        $storedContent = $serialized === false ? false : @unserialize($serialized);
-
-        if (! $storedContent instanceof \Illuminate\Support\Collection) {
-            DB::table(config('cart.database.table'))
-                ->where('identifier', $userId)
-                ->where('instance', self::INSTANCE)
-                ->delete();
-
-            return;
-        }
-
-        $cart = Cart::instance(self::INSTANCE);
-        $cart->destroy();
-
-        foreach ($storedContent as $cartItem) {
-            $cart->add($cartItem);
-        }
+        $this->cartService->restore($request->user()->id);
     }
 
     /**
@@ -201,19 +176,7 @@ class CartController extends Controller
      */
     private function persist(Request $request): void
     {
-        $userId = $request->user()->id;
-        $content = base64_encode(serialize(Cart::instance(self::INSTANCE)->content()));
-
-        DB::table(config('cart.database.table'))->updateOrInsert(
-            [
-                'identifier' => $userId,
-                'instance' => self::INSTANCE,
-            ],
-            [
-                'content' => $content,
-                'created_at' => now(),
-            ],
-        );
+        $this->cartService->persist($request->user()->id);
     }
 
     private function cartResponse(int $status = 200): JsonResponse
