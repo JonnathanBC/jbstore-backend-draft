@@ -10,6 +10,9 @@ class CartService
 {
     public const INSTANCE = 'shopping';
 
+    // Única fuente de verdad del costo de envío.
+    public const SHIPPING_COST = 3.0;
+
     /**
      * Carga el carrito guardado del usuario en la sesión del request.
      */
@@ -64,13 +67,32 @@ class CartService
     }
 
     /**
-     * Subtotal del carrito guardado del usuario (sin el tax del paquete).
+     * Totales del carrito ya cargado en la sesión. Sin items no se cobra envío.
+     *
+     * @return array{subtotal: float, shipping: float, total: float}
      */
-    public function subtotal(int $userId): float
+    public function totals(): array
+    {
+        $subtotal = (float) Cart::instance(self::INSTANCE)->subtotal(2, '.', '');
+        $shipping = $subtotal > 0 ? self::SHIPPING_COST : 0.0;
+
+        return [
+            'subtotal' => $subtotal,
+            'shipping' => $shipping,
+            'total' => round($subtotal + $shipping, 2),
+        ];
+    }
+
+    /**
+     * Totales del carrito guardado del usuario (lo restaura antes de calcular).
+     *
+     * @return array{subtotal: float, shipping: float, total: float}
+     */
+    public function totalsFor(int $userId): array
     {
         $this->restore($userId);
 
-        return (float) Cart::instance(self::INSTANCE)->subtotal(2, '.', '');
+        return $this->totals();
     }
 
     public function count(int $userId): int

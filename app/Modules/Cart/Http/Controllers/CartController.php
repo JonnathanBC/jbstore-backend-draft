@@ -189,11 +189,14 @@ class CartController extends Controller
     private function cartResponse(int $status = 200): JsonResponse
     {
         $cart = Cart::instance(self::INSTANCE);
+        $totals = $this->cartService->totals();
 
         return response()->json([
             'items' => $cart->content()->values(),
             'count' => $cart->count(),
             'subtotal' => $cart->subtotal(2, '.', ''),
+            'shipping' => number_format($totals['shipping'], 2, '.', ''),
+            'total' => number_format($totals['total'], 2, '.', ''),
         ], $status);
     }
 
