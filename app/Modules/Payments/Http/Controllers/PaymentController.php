@@ -151,10 +151,12 @@ class PaymentController {
         }
 
         // Un rechazo NO puede responder 200: el front lo tomaría como pago exitoso.
+        // `data` puede no venir (ej: error de autenticación): el front lo trata como opcional.
         return response()->json([
             'message' => $response['data']['ACTION_DESCRIPTION']
                 ?? $response['errorMessage']
                 ?? 'El pago fue rechazado',
+            'data' => $response['data'] ?? null,
         ], 402);
 
     }
