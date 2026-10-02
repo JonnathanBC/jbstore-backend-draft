@@ -8,4 +8,5 @@ Route::prefix('api/payments')
     ->group(function () {
         Route::get('/token', [PaymentController::class, 'generateToken']);
         Route::post('/session', [PaymentController::class, 'generateTokenSession']);
+        Route::post('/capture', [PaymentController::class, 'capturePayment']);
     });

@@ -95,6 +95,15 @@ class CartService
         return $this->totals();
     }
 
+    /**
+     * Vacía el carrito del usuario (sesión y DB). Se usa tras un pago aprobado.
+     */
+    public function clear(int $userId): void
+    {
+        Cart::instance(self::INSTANCE)->destroy();
+        $this->persist($userId);
+    }
+
     public function count(int $userId): int
     {
         $this->restore($userId);

@@ -3,6 +3,7 @@
 namespace App\Modules\Payments\Http\Controllers;
 
 use App\Modules\Cart\Services\CartService;
+use App\Modules\Payments\Http\Requests\CapturePaymentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -103,4 +104,58 @@ class PaymentController {
         return $response->body();
     }
 
+    public function capturePayment(CapturePaymentRequest $request)
+    {
+        $data = $request->validated();
+        $userId = $request->user()->id;
+
+        // El monto sale del carrito, no del request: el cliente puede manipularlo.
+        $totals = $this->cartService->totalsFor($userId);
+
+        if ($totals['subtotal'] <= 0) {
+            return response()->json([
+                'message' => 'El carrito está vacío',
+            ], 422);
+        }
+
+        $access_token = $this->requestAccessToken();
+
+        if (! $access_token) {
+            return response()->json([
+                'message' => 'No se pudo generar el token de pago',
+            ], 502);
+        }
+
+        $merchant_id = config('services.niubiz.merchant_id');
+        $url_final = config('services.niubiz.url_api') . "/api.authorization/v3/authorization/ecommerce/{$merchant_id}";
+
+        $response = Http::withHeaders([
+            'Authorization' => $access_token,
+            'Content-Type' => 'application/json',
+        ])->post($url_final, [
+            "channel" => "web",
+            "captureType" => "manual",
+            "countable" => true,
+            "order"  => [
+                "tokenId" => $data["transactionToken"],
+                "purchaseNumber" => $data["purchaseNumber"],
+                "amount" => $totals['total'],
+                "currency" => "PEN"
+            ]
+        ])->json();
+
+        if (($response['dataMap']['ACTION_CODE'] ?? null) === '000') {
+            $this->cartService->clear($userId);
+
+            return response()->json($response);
+        }
+
+        // Un rechazo NO puede responder 200: el front lo tomaría como pago exitoso.
+        return response()->json([
+            'message' => $response['data']['ACTION_DESCRIPTION']
+                ?? $response['errorMessage']
+                ?? 'El pago fue rechazado',
+        ], 402);
+
+    }
 }
