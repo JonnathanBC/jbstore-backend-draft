@@ -7,4 +7,5 @@ Route::prefix('api/payments')
     ->middleware('auth:sanctum')
     ->group(function () {
         Route::get('/token', [PaymentController::class, 'generateToken']);
+        Route::post('/session', [PaymentController::class, 'generateTokenSession']);
     });
