@@ -4,6 +4,7 @@ use App\Modules\Cart\Http\Controllers\CartController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api/cart')->middleware('auth:sanctum')->group(function () {
+    Route::get('/count', [CartController::class, 'count']);
     Route::get('/items', [CartController::class, 'index']);
     Route::post('/items', [CartController::class, 'store']);
     Route::patch('/items/{rowId}', [CartController::class, 'update']);

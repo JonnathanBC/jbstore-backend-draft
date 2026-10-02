@@ -72,4 +72,11 @@ class CartService
 
         return (float) Cart::instance(self::INSTANCE)->subtotal(2, '.', '');
     }
+
+    public function count(int $userId): int
+    {
+        $this->restore($userId);
+
+        return Cart::instance(self::INSTANCE)->count();
+    }
 }

@@ -24,6 +24,13 @@ class CartController extends Controller
         return $this->cartResponse();
     }
 
+    public function count(Request $request): JsonResponse
+    {
+        return response()->json([
+            'count' => $this->cartService->count($request->user()->id),
+        ]);
+    }
+
     public function store(AddToCartRequest $request): JsonResponse
     {
         $this->restore($request);
