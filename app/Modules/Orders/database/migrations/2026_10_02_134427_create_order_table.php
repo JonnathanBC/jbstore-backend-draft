@@ -20,12 +20,15 @@ return new class extends Migration
                 ->cascadeOnDelete();
 
             $table->string('pdf_path')->nullable();
+            $table->string('payment_provider')->default('niubiz');
+            $table->string('payment_id');
+
             $table->json('content');
             $table->json('address');
 
-            $table->string('payment_provider')->default('niubiz');
-            $table->string('payment_id')->nullable();
+
             $table->float('total');
+
             $table->enum('status', OrderStatusEnum::values())
                 ->default(OrderStatusEnum::Pending->value);
 
