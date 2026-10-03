@@ -110,4 +110,9 @@ class CartService
 
         return Cart::instance(self::INSTANCE)->count();
     }
+
+    public function contentFor(): Collection
+    {
+        return Cart::instance(self::INSTANCE)->content();
+    }
 }

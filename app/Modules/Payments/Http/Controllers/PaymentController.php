@@ -3,6 +3,7 @@
 namespace App\Modules\Payments\Http\Controllers;
 
 use App\Modules\Cart\Services\CartService;
+use App\Modules\Orders\Actions\CreateOrderFromCart;
 use App\Modules\Payments\Http\Requests\CapturePaymentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -11,7 +12,10 @@ use Illuminate\Support\Facades\Log;
 
 class PaymentController {
 
-    public function __construct(private CartService $cartService) {}
+    public function __construct(
+        private CartService $cartService,
+        private CreateOrderFromCart $createOrderFromCart
+        ) {}
 
     public function generateToken(): JsonResponse
     {
@@ -145,7 +149,10 @@ class PaymentController {
         ])->json();
 
         if (($response['dataMap']['ACTION_CODE'] ?? null) === '000') {
-            $this->cartService->clear($userId);
+
+            $payment_id = $response['dataMap']['TRANSACTION_ID'] ?? null;
+
+            $this->createOrderFromCart->handle($payment_id, $userId);
 
             return response()->json($response);
         }
