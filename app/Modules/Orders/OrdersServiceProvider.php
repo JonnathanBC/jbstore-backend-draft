@@ -2,6 +2,9 @@
 
 namespace App\Modules\Orders;
 
+use App\Modules\Orders\Models\Order;
+use App\Modules\Orders\Observers\OrderObserver;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
@@ -15,6 +18,8 @@ class OrdersServiceProvider extends ServiceProvider
             'orders'
         );
         Route::middleware('api')->group(__DIR__ . '/Routes/api.php');
+
+        Order::observe(OrderObserver::class);
     }
 
 }
