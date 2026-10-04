@@ -30,6 +30,7 @@ class AddressController extends Controller
                 'receiver_info' => [
                     'name' => trim($user->name . ' ' . $user->last_name),
                     'phone' => $data['phone'],
+                    'document_number' => $user->document_number,
                 ],
             ]);
 
