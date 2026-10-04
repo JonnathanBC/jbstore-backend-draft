@@ -35,10 +35,9 @@ class PaymentController {
     public function generateTokenSession(Request $request): JsonResponse
     {
         // El monto se calcula en el server: nunca se confía en el que mande el cliente.
-        $totals = $this->cartService->totalsFor($request->user()->id);
-        $amount = $totals['total'];
+        $amount = $this->cartService->subtotal($request->user()->id);
 
-        if ($totals['subtotal'] <= 0) {
+        if ($amount <= 0) {
             return response()->json([
                 'message' => 'El carrito está vacío',
             ], 422);
@@ -114,9 +113,9 @@ class PaymentController {
         $userId = $request->user()->id;
 
         // El monto sale del carrito, no del request: el cliente puede manipularlo.
-        $totals = $this->cartService->totalsFor($userId);
+        $amount = $this->cartService->subtotal($userId);
 
-        if ($totals['subtotal'] <= 0) {
+        if ($amount <= 0) {
             return response()->json([
                 'message' => 'El carrito está vacío',
             ], 422);
@@ -143,7 +142,7 @@ class PaymentController {
             "order"  => [
                 "tokenId" => $data["transactionToken"],
                 "purchaseNumber" => $data["purchaseNumber"],
-                "amount" => $totals['total'],
+                "amount" => $amount,
                 "currency" => "PEN"
             ]
         ])->json();
