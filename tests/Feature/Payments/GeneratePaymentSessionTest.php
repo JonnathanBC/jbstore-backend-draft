@@ -23,10 +23,14 @@ class GeneratePaymentSessionTest extends TestCase
         $user->id = 1;
         Sanctum::actingAs($user);
         $this->mock(CartService::class)
-            ->shouldReceive('subtotal')
+            ->shouldReceive('totalsFor')
             ->once()
             ->with($user->id)
-            ->andReturn(10.50);
+            ->andReturn([
+                'subtotal' => 647.18,
+                'shipping' => 3.0,
+                'total' => 650.18,
+            ]);
 
         Http::fake([
             'https://niubiz.test/api.security/v1/security' => Http::response('niubiz-token', 201),
@@ -38,7 +42,12 @@ class GeneratePaymentSessionTest extends TestCase
         $this->postJson('/api/payments/session')
             ->assertOk()
             ->assertJsonPath('sessionKey', 'niubiz-session-key')
-            ->assertJsonPath('amount', 10.50);
+            ->assertJsonPath('amount', 650.18);
+
+        Http::assertSent(fn ($request) =>
+            str_contains($request->url(), '/api.ecommerce/v2/ecommerce/token/session/')
+            && $request['amount'] === 650.18
+        );
     }
 
     public function test_it_returns_a_gateway_error_when_niubiz_session_request_fails(): void
@@ -54,10 +63,14 @@ class GeneratePaymentSessionTest extends TestCase
         $user->id = 1;
         Sanctum::actingAs($user);
         $this->mock(CartService::class)
-            ->shouldReceive('subtotal')
+            ->shouldReceive('totalsFor')
             ->once()
             ->with($user->id)
-            ->andReturn(10.50);
+            ->andReturn([
+                'subtotal' => 647.18,
+                'shipping' => 3.0,
+                'total' => 650.18,
+            ]);
 
         Http::fake([
             'https://niubiz.test/api.security/v1/security' => Http::response('niubiz-token', 201),

@@ -88,13 +88,6 @@ class CartService
      *
      * @return array{subtotal: float, shipping: float, total: float}
      */
-    public function subtotal(int $userId): float
-    {
-        $this->restore($userId);
-
-        return (float) Cart::instance(self::INSTANCE)->subtotal(2, '.', '');
-    }
-
     public function totalsFor(int $userId): array
     {
         $this->restore($userId);

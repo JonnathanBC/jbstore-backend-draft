@@ -48,9 +48,28 @@ class AddressOwnershipTest extends TestCase
 
         $this->postJson('/api/addresses', $this->validPayload())
             ->assertCreated()
-            ->assertJsonPath('user_id', $user->id);
+            ->assertJsonPath('user_id', $user->id)
+            ->assertJsonPath('receiver_info.document_number', $user->document_number);
 
         $this->assertDatabaseHas('addresses', ['user_id' => $user->id, 'city' => 'Quito']);
+    }
+
+    public function test_update_fills_document_number_for_an_existing_address(): void
+    {
+        $user = User::factory()->create();
+        $address = Address::factory()->for($user)->create([
+            'receiver_info' => ['name' => $user->name, 'phone' => '0991234567'],
+        ]);
+        Sanctum::actingAs($user);
+
+        $this->patchJson("/api/addresses/{$address->id}", ['city' => 'Guayaquil'])
+            ->assertOk()
+            ->assertJsonPath('receiver_info.document_number', $user->document_number);
+
+        $this->assertDatabaseHas('addresses', [
+            'id' => $address->id,
+            'city' => 'Guayaquil',
+        ]);
     }
 
     public function test_store_ignores_user_id_sent_in_body(): void

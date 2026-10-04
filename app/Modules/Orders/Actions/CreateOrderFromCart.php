@@ -14,10 +14,14 @@ class CreateOrderFromCart
 
     public function handle(string $paymentId, int $userId): Order
     {
-        $address = Address::where('is_default', true)->first();
+        $address = Address::query()
+            ->where('user_id', $userId)
+            ->where('is_default', true)
+            ->first();
         $totals = $this->cartService->totals();
 
         $order = Order::create([
+            'user_id' => $userId,
             'content' => $this->cartService->contentFor(),
             'address' => $address,
             'payment_id' => $paymentId,

@@ -58,9 +58,18 @@ class AddressController extends Controller
         $data = $request->validated();
         $makeDefault = (bool) ($data['is_default'] ?? false);
         unset($data['is_default']);
+        $user = $request->user();
 
-        DB::transaction(function () use ($address, $data, $makeDefault) {
-            $address->update($data);
+        DB::transaction(function () use ($address, $data, $makeDefault, $user) {
+            $receiverInfo = $address->receiver_info ?? [];
+            $receiverInfo['name'] ??= trim($user->name . ' ' . $user->last_name);
+            $receiverInfo['phone'] = $data['phone'] ?? $receiverInfo['phone'] ?? $address->phone;
+            $receiverInfo['document_number'] = $user->document_number;
+
+            $address->update([
+                ...$data,
+                'receiver_info' => $receiverInfo,
+            ]);
 
             if ($makeDefault) {
                 $address->markAsDefault();
