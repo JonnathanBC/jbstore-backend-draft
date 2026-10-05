@@ -18,6 +18,7 @@ class OrdersServiceProvider extends ServiceProvider
             'orders'
         );
         Route::middleware('api')->group(__DIR__ . '/Routes/api.php');
+        Route::middleware('api')->group(__DIR__ . '/Routes/admin.php'); // verificar un middleware diff
 
         Order::observe(OrderObserver::class);
     }

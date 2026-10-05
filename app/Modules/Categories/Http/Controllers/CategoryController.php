@@ -32,7 +32,7 @@ class CategoryController extends Controller
             $request,
             $allowedSortable,
         );
-}
+    }
 
     public function store(Request $request)
     {
