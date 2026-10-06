@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
 use App\Modules\Orders\Models\Order;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -77,5 +79,20 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         //
+    }
+
+    public function downloadOrderTicket(Order $order)
+    {
+        $filename = "ticket-{$order->id}.pdf";
+
+        $disk = Storage::disk('public');
+
+        if ($order->pdf_path && $disk->exists($order->pdf_path)) {
+            return response()->download($disk->path($order->pdf_path), $filename);
+        }
+
+        return Pdf::loadView('orders::ticket', compact('order'))
+            ->setPaper('a5')
+            ->download($filename);
     }
 }
