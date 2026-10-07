@@ -5,10 +5,15 @@ namespace App\Modules\Orders\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
+use App\Concerns\Scopes\OwnedByUserScope;
+use App\Modules\Orders\Enums\OrderStatusEnum;
+use App\Modules\Orders\Http\Requests\UpdateOrderStatusRequest;
 use App\Modules\Orders\Models\Order;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
@@ -79,6 +84,24 @@ class OrderController extends Controller
     public function destroy(Order $order)
     {
         //
+    }
+
+    public function updateStatus(UpdateOrderStatusRequest $request, string $id): JsonResponse
+    {
+        // El admin opera sobre órdenes de cualquier usuario: sin el scope de dueño
+        $order = Order::withoutGlobalScope(OwnedByUserScope::class)->findOrFail($id);
+        $next = OrderStatusEnum::from($request->validated('status'));
+
+        if (! $order->status->canTransitionTo($next)) {
+            throw ValidationException::withMessages([
+                'status' => "No se puede pasar de {$order->status->value} a {$next->value}.",
+            ]);
+        }
+
+        $order->status = $next;
+        $order->save();
+
+        return response()->json($order);
     }
 
     public function downloadOrderTicket(Order $order)
