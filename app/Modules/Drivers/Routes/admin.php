@@ -7,5 +7,5 @@ Route::middleware(['auth:sanctum', 'can:admin'])
     ->prefix('api/admin')
     ->name('admin.')
     ->group(function () {
-        Route::apiResource('drivers', DriverController::class);
+        Route::resource('drivers', DriverController::class);
     });
