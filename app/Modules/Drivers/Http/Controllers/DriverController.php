@@ -5,6 +5,7 @@ namespace App\Modules\Drivers\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Drivers\Http\Requests\StoreDriverRequest;
 use App\Modules\Drivers\Http\Requests\UpdateDriverRequest;
+use App\Modules\Drivers\Http\Resources\DriverResource;
 use App\Modules\Drivers\Models\Driver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -14,12 +15,13 @@ class DriverController extends Controller
     public function index(Request $request)
     {
         $allowedSortable = ['updated_at'];
-        $query = Driver::query();
+        $query = Driver::query()->with('user');
 
         return $this->paginated(
             $query,
             $request,
             $allowedSortable,
+            DriverResource::class,
         );
     }
 
