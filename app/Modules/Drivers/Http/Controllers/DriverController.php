@@ -3,15 +3,14 @@
 namespace App\Modules\Drivers\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Drivers\Http\Requests\StoreDriverRequest;
+use App\Modules\Drivers\Http\Requests\UpdateDriverRequest;
 use App\Modules\Drivers\Models\Driver;
-
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DriverController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(Request $request)
     {
         $allowedSortable = ['updated_at'];
@@ -24,51 +23,29 @@ class DriverController extends Controller
         );
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(StoreDriverRequest $request): JsonResponse
     {
-        //
+        $driver = Driver::create($request->validated());
+
+        return response()->json($driver, 201);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function show(Driver $driver): JsonResponse
     {
-        //
+        return response()->json($driver);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Driver $driver)
+    public function update(UpdateDriverRequest $request, Driver $driver): JsonResponse
     {
-        //
+        $driver->update($request->validated());
+
+        return response()->json($driver->fresh());
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Driver $driver)
+    public function destroy(Driver $driver): JsonResponse
     {
-        //
-    }
+        $driver->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Driver $driver)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Driver $driver)
-    {
-        //
+        return response()->json(null, 204);
     }
 }
