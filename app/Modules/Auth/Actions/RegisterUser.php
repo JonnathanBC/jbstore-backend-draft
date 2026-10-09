@@ -5,9 +5,9 @@ namespace App\Modules\Auth\Actions;
 use App\Modules\Users\Models\User;
 use Illuminate\Support\Facades\Hash;
 
-class RegisterAction
+class RegisterUser
 {
-    public function execute(array $data): array
+    public function handle(array $data): array
     {
         $user = User::create([
             'name'            => $data['name'],

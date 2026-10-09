@@ -5,9 +5,9 @@ namespace App\Modules\Auth\Actions;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
-class LoginAction
+class LoginUser
 {
-    public function execute(array $credentials): array
+    public function handle(array $credentials): array
     {
         if (!Auth::attempt($credentials)) {
             throw ValidationException::withMessages([

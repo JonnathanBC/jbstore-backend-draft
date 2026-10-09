@@ -4,23 +4,23 @@ namespace App\Modules\Auth\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Modules\Auth\Actions\LoginAction;
-use App\Modules\Auth\Actions\RegisterAction;
+use App\Modules\Auth\Actions\LoginUser;
+use App\Modules\Auth\Actions\RegisterUser;
 use App\Modules\Auth\Http\Requests\LoginRequest;
 use App\Modules\Auth\Http\Requests\RegisterRequest;
 
 class AuthController
 {
-    public function register(RegisterRequest $request, RegisterAction $action)
+    public function register(RegisterRequest $request, RegisterUser $registerUser)
     {
-        $result = $action->execute($request->validated());
+        $result = $registerUser->handle($request->validated());
 
         return response()->json($result, 201);
     }
 
-    public function login(LoginRequest $request, LoginAction $action)
+    public function login(LoginRequest $request, LoginUser $loginUser)
     {
-        $result = $action->execute($request->validated());
+        $result = $loginUser->handle($request->validated());
 
         return response()->json($result);
     }
