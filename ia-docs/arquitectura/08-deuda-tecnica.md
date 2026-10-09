@@ -6,9 +6,9 @@ Relevado sobre el código actual. Ordenado por **riesgo**, no por esfuerzo. Cada
 
 | # | Problema | Dónde | Solución |
 |---|---|---|---|
-| 1 | Pagos **no idempotentes**: dos capturas simultáneas pueden cobrar y crear dos órdenes | `PaymentController::capturePayment` | Tabla `payments`, `purchase_number` del servidor, lock, `UNIQUE` → [05](05-pagos-e-idempotencia.md) |
-| 2 | `orders.payment_id` no es `unique` | migración de orders | Migración que agregue el índice único |
-| 3 | Cobro aprobado + falla al crear la orden = plata cobrada sin registro | `capturePayment` | Registrar el pago antes, reconciliación → [05](05-pagos-e-idempotencia.md) |
+| 1 | ✅ **Resuelto** (`Payments/Actions/CapturePayment`). Pagos **no idempotentes**: dos capturas simultáneas pueden cobrar y crear dos órdenes | `PaymentController::capturePayment` | Tabla `payments`, `purchase_number` del servidor, lock, `UNIQUE` → [05](05-pagos-e-idempotencia.md) |
+| 2 | ✅ **Resuelto**. `orders.payment_id` no es `unique` | migración de orders | Migración que agregue el índice único |
+| 3 | ✅ **Resuelto** (falta el comando de reconciliación). Cobro aprobado + falla al crear la orden = plata cobrada sin registro | `capturePayment` | Registrar el pago antes, reconciliación → [05](05-pagos-e-idempotencia.md) |
 | 4 | Token de sesión en la URL del callback de Google | `GoogleAuthController@callback` | Código de un solo uso → [09](09-seguridad.md#el-token-en-la-url-del-callback-de-google) |
 | 5 | Tokens de Sanctum sin expiración | `config/sanctum.php` | `expiration` + `prune-expired` → [09](09-seguridad.md) |
 | 6 | Sin rate limit en login/registro/pagos | rutas de Auth y Payments | `throttle` → [09](09-seguridad.md#rate-limiting) |

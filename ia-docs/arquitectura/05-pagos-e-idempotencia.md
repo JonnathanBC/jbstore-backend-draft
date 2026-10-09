@@ -45,7 +45,7 @@ Esto es lo que el estándar **PCI DSS** llama integración **SAQ A**: todos los 
 - Timeout: Niubiz cobró, pero la respuesta no llegó a tu servidor (o a tu front) → el usuario reintenta.
 - Dos pestañas con el mismo carrito.
 
-### Hoy (problemas)
+### Antes (resuelto el 2026-10-09: ver `Payments/Actions/CapturePayment`)
 
 `PaymentController::capturePayment`:
 
