@@ -10,6 +10,7 @@ use App\Modules\Drivers\DriversServiceProvider;
 use App\Modules\Orders\OrdersServiceProvider;
 use App\Modules\Payments\PaymentsServiceProvider;
 use App\Modules\Products\ProductsServiceProvider;
+use App\Modules\Shippings\ShippingsServiceProvider as ShippingsShippingsServiceProvider;
 use App\Modules\Users\UsersServiceProvider;
 
 return [
@@ -23,4 +24,5 @@ return [
     PaymentsServiceProvider::class,
     OrdersServiceProvider::class,
     DriversServiceProvider::class,
+    ShippingsShippingsServiceProvider::class,
 ];

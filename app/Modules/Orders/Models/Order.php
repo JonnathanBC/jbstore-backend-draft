@@ -4,6 +4,7 @@ namespace App\Modules\Orders\Models;
 
 use App\Concerns\BelongsToUser;
 use App\Modules\Orders\Enums\OrderStatusEnum;
+use App\Modules\Shippings\Models\Shipping;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -35,5 +36,10 @@ class Order extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function shippings()
+    {
+        return $this->hasMany(Shipping::class);
     }
 }
