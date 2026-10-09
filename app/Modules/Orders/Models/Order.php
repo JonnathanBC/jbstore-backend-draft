@@ -3,8 +3,8 @@
 namespace App\Modules\Orders\Models;
 
 use App\Concerns\BelongsToUser;
+use App\Concerns\Scopes\OwnedByUserScope;
 use App\Modules\Orders\Enums\OrderStatusEnum;
-use App\Modules\Shippings\Models\Shipping;
 use App\Modules\Users\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -33,13 +33,17 @@ class Order extends Model
         ];
     }
 
+    /**
+     * El admin opera sobre órdenes de cualquier usuario: busca sin el scope de dueño.
+     * Así ningún otro módulo necesita conocer OwnedByUserScope.
+     */
+    public static function findForAdminOrFail(string $id): self
+    {
+        return static::withoutGlobalScope(OwnedByUserScope::class)->findOrFail($id);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function shippings()
-    {
-        return $this->hasMany(Shipping::class);
     }
 }

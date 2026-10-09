@@ -11,7 +11,7 @@ class ShippingsServiceProvider extends ServiceProvider
     {
         $this->loadMigrationsFrom(__DIR__ . '/database/migrations');
 
-        Route::middleware('api')->group(__DIR__ . '/Routes/api.php');
+        Route::middleware('api')->group(__DIR__ . '/Routes/admin.php');
     }
 
 }

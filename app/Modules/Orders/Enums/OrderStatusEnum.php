@@ -31,6 +31,7 @@ enum OrderStatusEnum: string
     {
         return match ($this) {
             self::Pending => [self::Processing],
+            self::Processing => [self::Shipped],
             default => [],
         };
     }
