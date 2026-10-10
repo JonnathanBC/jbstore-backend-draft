@@ -6,22 +6,23 @@ use App\Http\Controllers\Controller;
 use App\Modules\Orders\Models\Order;
 use App\Modules\Shippings\Actions\CreateShipping;
 use App\Modules\Shippings\Http\Requests\CreateShippingRequest;
+use App\Modules\Shippings\Http\Resources\ShippingsResource;
 use App\Modules\Shippings\Models\Shipping;
-
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class ShippingController extends Controller
 {
     public function index(Request $request)
     {
         $allowedSortable = ['updated_at'];
-        $query = Shipping::query();
+        $query = Shipping::query()->with('driver.user');
 
         return $this->paginated(
             $query,
             $request,
-            $allowedSortable
+            $allowedSortable,
+            ShippingsResource::class,
         );
     }
 
@@ -35,6 +36,8 @@ class ShippingController extends Controller
             (int) $request->validated('driver_id'),
         );
 
-        return response()->json($shipping->refresh(), 201);
+        return (new ShippingsResource($shipping->refresh()->load('driver.user')))
+            ->response()
+            ->setStatusCode(201);
     }
 }
