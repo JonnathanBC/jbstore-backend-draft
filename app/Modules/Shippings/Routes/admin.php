@@ -8,4 +8,6 @@ Route::middleware(['auth:sanctum', 'can:admin'])
     ->name('admin.')
     ->group(function () {
         Route::post('/orders/{id}/shipping', [ShippingController::class, 'store']);
+
+        Route::get('/shippings', [ShippingController::class, 'index']);
     });
