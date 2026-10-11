@@ -10,6 +10,6 @@ Route::middleware(['auth:sanctum', 'can:admin'])
     ->group(function () {
         Route::apiResource('orders', OrderController::class);
 
-        Route::get('/orders/{order}/ticket/download', [OrderController::class, 'downloadOrderTicket']);
+        Route::get('/orders/{id}/ticket/download', [OrderController::class, 'downloadOrderTicket']);
         Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
     });

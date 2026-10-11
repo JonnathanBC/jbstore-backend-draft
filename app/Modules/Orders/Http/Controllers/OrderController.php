@@ -23,7 +23,8 @@ class OrderController extends Controller
     {
         $allowedSortable = ['updated_at'];
 
-        $query = Order::query()->latest('created_at');
+        // Listado del panel: órdenes de todos los usuarios, no solo las del admin logueado
+        $query = Order::query()->forAdmin()->latest('created_at');
 
         // Filtros dinámicos
         if ($request->filled('key')) {
@@ -98,8 +99,10 @@ class OrderController extends Controller
         return response()->json($order);
     }
 
-    public function downloadOrderTicket(Order $order)
+    // Sin route model binding: el binding aplica el scope de dueño y al admin le daba 404
+    public function downloadOrderTicket(string $id)
     {
+        $order = Order::findForAdminOrFail($id);
         $filename = "ticket-{$order->id}.pdf";
 
         $disk = Storage::disk('public');

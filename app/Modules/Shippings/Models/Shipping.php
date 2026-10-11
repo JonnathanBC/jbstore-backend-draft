@@ -63,7 +63,8 @@ class Shipping extends Model
 
     public function order()
     {
-        return $this->belongsTo(Order::class);
+        // Los envíos son del admin: la orden es de OTRO usuario y el scope de dueño la ocultaría (null)
+        return $this->belongsTo(Order::class)->forAdmin();
     }
 
     public function driver()
