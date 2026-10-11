@@ -21,11 +21,11 @@ class GeneratePaymentTokenTest extends TestCase
 
         $this->withoutMiddleware();
         $this->getJson('/api/payments/token')
-            ->assertCreated()
+            ->assertOk()
             ->assertJsonPath('accessToken', 'niubiz-token');
     }
 
-    public function test_it_preserves_niubiz_authentication_errors_as_json(): void
+    public function test_niubiz_error_is_hidden_behind_a_502(): void
     {
         config([
             'services.niubiz.url_api' => 'https://niubiz.test',
@@ -39,7 +39,8 @@ class GeneratePaymentTokenTest extends TestCase
 
         $this->withoutMiddleware();
         $this->getJson('/api/payments/token')
-            ->assertUnauthorized()
-            ->assertJsonPath('message', 'Unauthorized access');
+            // No se filtra el status ni el mensaje de Niubiz: PaymentGatewayException responde 502 genérico
+            ->assertStatus(502)
+            ->assertJsonPath('message', 'No se pudo generar el token de pago');
     }
 }

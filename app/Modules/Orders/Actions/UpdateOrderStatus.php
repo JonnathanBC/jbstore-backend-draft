@@ -3,7 +3,8 @@
 namespace App\Modules\Orders\Actions;
 
 use App\Modules\Orders\Enums\OrderStatusEnum;
-use App\Modules\Orders\Models\Order;
+use App\Modules\Orders\Events\OrderStatusChanged;use App\Modules\Orders\Models\Order;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 /**
@@ -17,13 +18,20 @@ class UpdateOrderStatus
     {
         if (! $order->status->canTransitionTo($next)) {
             throw ValidationException::withMessages([
-                'status' => "No se puede pasar la orden de {$order->status->value} a {$next->value}.",
+                'status' => $order->status->transitionErrorTo($next),
             ]);
         }
 
-        $order->status = $next;
-        $order->save();
+        // Orden y reacciones de otros módulos cambian juntas: si falla un listener, no queda nada a medias
+        return DB::transaction(function () use ($order, $next) {
+            $previous = $order->status;
 
-        return $order;
+            $order->status = $next;
+            $order->save();
+
+            OrderStatusChanged::dispatch($order, $previous, $next);
+
+            return $order;
+        });
     }
 }
