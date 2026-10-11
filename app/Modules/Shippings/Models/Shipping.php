@@ -2,6 +2,7 @@
 
 namespace App\Modules\Shippings\Models;
 
+use App\Concerns\Scopes\OwnedByUserScope;
 use App\Modules\Drivers\Models\Driver;
 use App\Modules\Orders\Models\Order;
 use App\Modules\Shippings\Enums\ShippingStatusEnum;
@@ -25,6 +26,11 @@ class Shipping extends Model
         'refunded_at' => 'datetime',
         'delivered_at' => 'datetime',
     ];
+
+    public static function findForAdminOrFail(string $id): self
+    {
+        return static::withoutGlobalScope(OwnedByUserScope::class)->findOrFail($id);
+    }
 
     public function order()
     {

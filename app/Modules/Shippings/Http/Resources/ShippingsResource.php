@@ -30,6 +30,8 @@ class ShippingsResource extends JsonResource
                 'license_plate' => $this->driver->license_plate,
             ]),
             'status' => $this->status,
+            'refunded_at' => $this->refunded_at?->toIso8601String(),
+            'delivered_at' => $this->delivered_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
     }

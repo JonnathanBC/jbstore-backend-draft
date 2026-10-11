@@ -10,4 +10,5 @@ Route::middleware(['auth:sanctum', 'can:admin'])
         Route::post('/orders/{id}/shipping', [ShippingController::class, 'store']);
 
         Route::get('/shippings', [ShippingController::class, 'index']);
+        Route::patch('/shippings/{id}/status', [ShippingController::class, 'updateStatus']);
     });

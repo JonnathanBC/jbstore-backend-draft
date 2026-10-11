@@ -5,7 +5,10 @@ namespace App\Modules\Shippings\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Orders\Models\Order;
 use App\Modules\Shippings\Actions\CreateShipping;
+use App\Modules\Shippings\Actions\UpdateShippingStatus;
+use App\Modules\Shippings\Enums\ShippingStatusEnum;
 use App\Modules\Shippings\Http\Requests\CreateShippingRequest;
+use App\Modules\Shippings\Http\Requests\UpdateShippingStatusRequest;
 use App\Modules\Shippings\Http\Resources\ShippingsResource;
 use App\Modules\Shippings\Models\Shipping;
 use Illuminate\Http\JsonResponse;
@@ -39,5 +42,18 @@ class ShippingController extends Controller
         return (new ShippingsResource($shipping->refresh()->load('driver.user')))
             ->response()
             ->setStatusCode(201);
+    }
+
+    public function updateStatus(
+        UpdateShippingStatusRequest $request,
+        string $id,
+        UpdateShippingStatus $updateShippingStatus,
+    ): JsonResponse {
+        $shipping = $updateShippingStatus->handle(
+            Shipping::findForAdminOrFail($id),
+            ShippingStatusEnum::from($request->validated('status')),
+        );
+
+        return (new ShippingsResource($shipping->load('driver.user')))->response();
     }
 }

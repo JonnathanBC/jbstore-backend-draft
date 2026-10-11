@@ -23,16 +23,15 @@ enum ShippingStatusEnum: string
      *
      * @return list<self>
      */
-    // public function allowedTransitions(): array
-    // {
-    //     return match ($this) {
-    //         self::Pending => [self::Processing],
-    //         default => [],
-    //     };
-    // }
+    public function allowedTransitions(): array
+    {
+        return match ($this) {
+            self::Pending => [self::Completed, self::Failed],            default => [],
+        };
+    }
 
-    // public function canTransitionTo(self $next): bool
-    // {
-    //     return in_array($next, $this->allowedTransitions(), true);
-    // }
+    public function canTransitionTo(self $next): bool
+    {
+        return in_array($next, $this->allowedTransitions(), true);
+    }
 }
