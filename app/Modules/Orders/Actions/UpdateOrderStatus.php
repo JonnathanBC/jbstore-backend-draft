@@ -17,7 +17,7 @@ class UpdateOrderStatus
     {
         if (! $order->status->canTransitionTo($next)) {
             throw ValidationException::withMessages([
-                'status' => "No se puede pasar de {$order->status->value} a {$next->value}.",
+                'status' => "No se puede pasar la orden de {$order->status->value} a {$next->value}.",
             ]);
         }
 
