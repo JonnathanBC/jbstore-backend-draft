@@ -5,6 +5,7 @@ namespace App\Modules\Payments\Actions;
 use App\Modules\Cart\Services\CartService;
 use App\Modules\Payments\Models\Payment;
 use App\Modules\Payments\Services\NiubizClient;
+use App\Modules\Users\Models\User;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Validation\ValidationException;
 
@@ -26,6 +27,13 @@ class StartPayment
      */
     public function handle(int $userId, string $clientIp): array
     {
+        // La orden y el ticket necesitan documento y teléfono: sin perfil completo no se cobra
+        if (! User::findOrFail($userId)->isProfileComplete()) {
+            throw ValidationException::withMessages([
+                'profile' => 'Completá tus datos (documento y teléfono) antes de pagar.',
+            ]);
+        }
+
         // El monto se calcula en el server: nunca se confía en el que mande el cliente
         $totals = $this->cartService->totalsFor($userId);
 

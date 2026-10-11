@@ -38,6 +38,21 @@ class GeneratePaymentSessionTest extends TestCase
             ->andReturn(['subtotal' => $subtotal, 'shipping' => 3.0, 'total' => $total]);
     }
 
+    public function test_incomplete_profile_cannot_start_a_payment(): void
+    {
+        // Usuario de Google sin documento: la orden/ticket necesita esos datos
+        $this->user->update(['document_type' => null, 'document_number' => null, 'phone' => null]);
+        $this->mockCartTotals(100, 103);
+        Http::fake();
+
+        $this->postJson('/api/payments/session')
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('profile');
+
+        $this->assertDatabaseCount('payments', 0);
+        Http::assertNothingSent();
+    }
+
     public function test_it_starts_a_pending_payment_with_a_server_generated_purchase_number(): void
     {
         $this->mockCartTotals(647.18, 650.18);

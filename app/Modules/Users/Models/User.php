@@ -42,6 +42,17 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * Lo mínimo para facturar y despachar. Un usuario de Google nace sin estos datos.
+     */
+    public function isProfileComplete(): bool
+    {
+        return filled($this->last_name)
+            && filled($this->document_type)
+            && filled($this->document_number)
+            && filled($this->phone);
+    }
+
     public function addresses()
     {
         return $this->hasMany(Address::class);

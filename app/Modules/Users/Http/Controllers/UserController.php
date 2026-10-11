@@ -3,6 +3,8 @@
 namespace App\Modules\Users\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Users\Actions\CompleteProfile;
+use App\Modules\Users\Http\Requests\CompleteProfileRequest;
 use App\Modules\Users\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -82,6 +84,22 @@ class UserController extends Controller
 
     public function me(Request $request)
     {
-        return response()->json($request->user());
+        return $this->profileResponse($request->user());
+    }
+
+    public function updateProfile(CompleteProfileRequest $request, CompleteProfile $completeProfile): JsonResponse
+    {
+        return $this->profileResponse(
+            $completeProfile->handle($request->user(), $request->validated()),
+        );
+    }
+
+    // El front decide si mostrar el form de perfil en el checkout con este flag
+    private function profileResponse(User $user): JsonResponse
+    {
+        return response()->json([
+            ...$user->toArray(),
+            'profile_complete' => $user->isProfileComplete(),
+        ]);
     }
 }

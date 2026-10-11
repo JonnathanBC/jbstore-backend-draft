@@ -11,5 +11,6 @@ Route::prefix('public')->group(function () {
 Route::prefix('user')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/me', [UserController::class, 'me']);
+        Route::patch('/me/profile', [UserController::class, 'updateProfile']);
     });
 });

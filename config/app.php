@@ -54,6 +54,9 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    // A dónde vuelve el login con Google. env() solo acá: con config:cache, env() fuera de config devuelve null
+    'frontend_url' => env('FRONTEND_URL', 'http://localhost:4321'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
