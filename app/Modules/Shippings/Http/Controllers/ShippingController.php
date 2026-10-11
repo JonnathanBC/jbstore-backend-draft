@@ -8,6 +8,7 @@ use App\Modules\Shippings\Actions\CreateShipping;
 use App\Modules\Shippings\Actions\UpdateShippingStatus;
 use App\Modules\Shippings\Enums\ShippingStatusEnum;
 use App\Modules\Shippings\Http\Requests\CreateShippingRequest;
+use App\Modules\Shippings\Http\Requests\ListShippingsRequest;
 use App\Modules\Shippings\Http\Requests\UpdateShippingStatusRequest;
 use App\Modules\Shippings\Http\Resources\ShippingsResource;
 use App\Modules\Shippings\Models\Shipping;
@@ -16,10 +17,12 @@ use Illuminate\Http\Request;
 
 class ShippingController extends Controller
 {
-    public function index(Request $request)
+    public function index(ListShippingsRequest $request)
     {
         $allowedSortable = ['updated_at'];
-        $query = Shipping::query()->with('driver.user');
+        $query = Shipping::query()
+            ->with('driver.user')
+            ->filter($request->validated());
 
         return $this->paginated(
             $query,
