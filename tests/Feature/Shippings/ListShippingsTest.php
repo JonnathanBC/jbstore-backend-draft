@@ -58,7 +58,7 @@ class ListShippingsTest extends TestCase
     public function test_without_filters_returns_all_shippings(): void
     {
         $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings')
             ->assertOk()
@@ -68,7 +68,7 @@ class ListShippingsTest extends TestCase
     public function test_search_by_license_plate(): void
     {
         $shippings = $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?search=xyz')
             ->assertOk()
@@ -79,7 +79,7 @@ class ListShippingsTest extends TestCase
     public function test_search_by_driver_name_is_case_insensitive(): void
     {
         $shippings = $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?search=jUAN')
             ->assertOk()
@@ -94,7 +94,7 @@ class ListShippingsTest extends TestCase
     public function test_search_by_driver_full_name(): void
     {
         $shippings = $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?search=' . urlencode('pedro gomez'))
             ->assertOk()
@@ -105,7 +105,7 @@ class ListShippingsTest extends TestCase
     public function test_filter_by_status(): void
     {
         $shippings = $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?status=failed')
             ->assertOk()
@@ -116,7 +116,7 @@ class ListShippingsTest extends TestCase
     public function test_empty_status_is_ignored(): void
     {
         $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?status=')
             ->assertOk()
@@ -126,7 +126,7 @@ class ListShippingsTest extends TestCase
     public function test_search_and_status_combined(): void
     {
         $shippings = $this->seedShippings();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?search=gomez&status=completed')
             ->assertOk()
@@ -140,7 +140,7 @@ class ListShippingsTest extends TestCase
 
     public function test_invalid_status_is_rejected(): void
     {
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->getJson('/api/admin/shippings?status=nope')
             ->assertUnprocessable()

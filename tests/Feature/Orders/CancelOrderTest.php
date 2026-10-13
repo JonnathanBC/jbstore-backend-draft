@@ -53,7 +53,7 @@ class CancelOrderTest extends TestCase
     {
         $order = $this->makeOrder(OrderStatusEnum::Processing);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'cancelled'])
             ->assertOk()
@@ -67,7 +67,7 @@ class CancelOrderTest extends TestCase
         $order = $this->makeOrder(OrderStatusEnum::Shipped);
         $this->makeShipping($order, ShippingStatusEnum::Pending);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'cancelled'])
             ->assertUnprocessable()
@@ -81,7 +81,7 @@ class CancelOrderTest extends TestCase
         $order = $this->makeOrder(OrderStatusEnum::Failed);
         $this->makeShipping($order, ShippingStatusEnum::Failed);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'cancelled'])
             ->assertUnprocessable()
@@ -95,7 +95,7 @@ class CancelOrderTest extends TestCase
         $order = $this->makeOrder(OrderStatusEnum::Refunded);
         $this->makeShipping($order, ShippingStatusEnum::Failed);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'cancelled'])
             ->assertOk();
@@ -107,7 +107,7 @@ class CancelOrderTest extends TestCase
     {
         $order = $this->makeOrder(OrderStatusEnum::Cancelled);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'cancelled'])
             ->assertUnprocessable()
@@ -123,7 +123,7 @@ class CancelOrderTest extends TestCase
             'license_plate' => 'XYZ-789',
         ]);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders', 'manage.shippings'));
 
         $this->postJson("/api/admin/orders/{$order->id}/shipping", ['driver_id' => $driver->id])
             ->assertCreated()

@@ -35,7 +35,7 @@ class UpdateOrderStatusTest extends TestCase
     {
         $order = $this->makeOrder(User::factory()->create());
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'processing'])
             ->assertOk()
@@ -49,7 +49,7 @@ class UpdateOrderStatusTest extends TestCase
     {
         $order = $this->makeOrder(User::factory()->create(), OrderStatusEnum::Completed);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'processing'])
             ->assertUnprocessable()
@@ -62,7 +62,7 @@ class UpdateOrderStatusTest extends TestCase
     {
         $order = $this->makeOrder(User::factory()->create());
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'teleported'])
             ->assertUnprocessable()

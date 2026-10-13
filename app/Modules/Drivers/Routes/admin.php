@@ -3,7 +3,7 @@
 use App\Modules\Drivers\Http\Controllers\DriverController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', 'can:admin'])
+Route::middleware(['auth:sanctum', 'can:manage.drivers'])
     ->prefix('api/admin')
     ->name('admin.')
     ->group(function () {

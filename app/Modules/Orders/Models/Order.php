@@ -46,7 +46,7 @@ class Order extends Model
     /**
      * Sin el scope de dueño (que filtra por Auth::id() incluso si el que pide es el admin).
      * Sirve en queries y en relaciones de otros módulos: `belongsTo(Order::class)->forAdmin()`.
-     * Usalo SOLO detrás de can:admin.
+     * Usalo SOLO detrás de can:manage.orders.
      */
     public function scopeForAdmin(Builder $query): Builder
     {

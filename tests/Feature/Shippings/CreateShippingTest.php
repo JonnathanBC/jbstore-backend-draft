@@ -46,7 +46,7 @@ class CreateShippingTest extends TestCase
         $order = $this->makeOrder(User::factory()->create());
         $driver = $this->makeDriver();
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->postJson("/api/admin/orders/{$order->id}/shipping", ['driver_id' => $driver->id])
             ->assertCreated()
@@ -63,7 +63,7 @@ class CreateShippingTest extends TestCase
         $order = $this->makeOrder(User::factory()->create(), OrderStatusEnum::Pending);
         $driver = $this->makeDriver();
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->postJson("/api/admin/orders/{$order->id}/shipping", ['driver_id' => $driver->id])
             ->assertUnprocessable()
@@ -77,7 +77,7 @@ class CreateShippingTest extends TestCase
     {
         $order = $this->makeOrder(User::factory()->create());
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->postJson("/api/admin/orders/{$order->id}/shipping", ['driver_id' => 999])
             ->assertUnprocessable()
@@ -90,7 +90,7 @@ class CreateShippingTest extends TestCase
     {
         $order = $this->makeOrder(User::factory()->create());
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.shippings'));
 
         $this->postJson("/api/admin/orders/{$order->id}/shipping", [])
             ->assertUnprocessable()

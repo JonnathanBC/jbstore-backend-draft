@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Modules\Users\Enums\UserRoleEnum;
 use App\Modules\Users\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 
@@ -14,8 +14,9 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = Role::create([
-            'name' => 'admin'
+        $admin = Role::firstOrCreate([
+            'name' => 'admin',
+            'guard_name' => 'web',
         ]);
 
         $admin->syncPermissions([
@@ -28,19 +29,21 @@ class RoleSeeder extends Seeder
             'manage.covers',
             'manage.drivers',
             'manage.orders',
-            'manage.shippings'
+            'manage.shippings',
+            'manage.users',
         ]);
 
-        $user = User::find(1);
-        $user->assignRole($admin);
+        User::query()
+            ->where('role', UserRoleEnum::Admin->value)
+            ->each(fn (User $user) => $user->assignRole($admin));
 
-        $driver = Role::create([
-            'name' => 'driver'
+        $driver = Role::firstOrCreate([
+            'name' => 'driver',
+            'guard_name' => 'web',
         ]);
 
         $driver->syncPermissions([
             'access.dashboard',
-            'manage.shippings',
         ]);
     }
 }

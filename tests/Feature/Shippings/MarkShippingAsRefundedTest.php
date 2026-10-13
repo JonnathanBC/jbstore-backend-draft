@@ -59,7 +59,7 @@ class MarkShippingAsRefundedTest extends TestCase
         $this->travel(1)->minute();
         $latestShipping = $this->makeShipping($order);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'refunded'])
             ->assertOk()
@@ -74,7 +74,7 @@ class MarkShippingAsRefundedTest extends TestCase
     {
         $order = $this->makeOrder(User::factory()->create());
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'refunded'])
             ->assertOk();
@@ -87,7 +87,7 @@ class MarkShippingAsRefundedTest extends TestCase
         $order = $this->makeOrder(User::factory()->create(), OrderStatusEnum::Shipped);
         $shipping = $this->makeShipping($order);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'refunded'])
             ->assertUnprocessable()
@@ -102,7 +102,7 @@ class MarkShippingAsRefundedTest extends TestCase
         $order = $this->makeOrder(User::factory()->create(), OrderStatusEnum::Shipped);
         $shipping = $this->makeShipping($order);
 
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders'));
 
         $this->patchJson("/api/admin/orders/{$order->id}/status", ['status' => 'failed'])
             ->assertOk();

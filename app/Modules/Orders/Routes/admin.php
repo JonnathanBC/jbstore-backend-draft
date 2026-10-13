@@ -1,10 +1,9 @@
 <?php
 
 use App\Modules\Orders\Http\Controllers\OrderController;
-use App\Modules\Orders\Http\Controllers\TicketController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth:sanctum', 'can:admin'])
+Route::middleware(['auth:sanctum', 'can:manage.orders'])
     ->prefix('api/admin')
     ->name('admin.')
     ->group(function () {

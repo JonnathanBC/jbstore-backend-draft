@@ -26,7 +26,7 @@ class AdminAccessToOtherUsersOrdersTest extends TestCase
         parent::setUp();
 
         $this->customer = User::factory()->create();
-        Sanctum::actingAs(User::factory()->admin()->create());
+        Sanctum::actingAs($this->adminUser('manage.orders', 'manage.shippings'));
     }
 
     private function makeCustomerOrder(OrderStatusEnum $status): Order
