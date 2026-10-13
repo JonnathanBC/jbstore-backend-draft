@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\PermissionRegistrar;
 
 class PermissionSeeder extends Seeder
 {
@@ -30,8 +31,9 @@ class PermissionSeeder extends Seeder
             Permission::create([
                 'name' => $permission
             ]);
-
-
         }
+
+        // DatabaseSeeder suppresses model events, so invalidate Spatie's permission cache explicitly.
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
 }

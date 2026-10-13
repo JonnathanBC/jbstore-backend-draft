@@ -33,12 +33,15 @@ class DatabaseSeeder extends Seeder
             'role' => UserRoleEnum::Admin,
         ]);
 
+        User::factory(20)->create();
+
         $this->call([
             FamilySeeder::class,
             OptionSeeder::class,
             PermissionSeeder::class,
+            RoleSeeder::class,
         ]);
 
-        Product::factory(600)->create();
+        Product::factory(250)->create();
     }
 }
