@@ -35,6 +35,18 @@ class UserController extends Controller
     }
 
     /**
+     * Paginado de usuarios para la pantalla de administración.
+     */
+    public function listing(Request $request): JsonResponse
+    {
+        return $this->paginated(
+            User::query()->select(['id', 'name', 'last_name', 'email', 'role', 'created_at']),
+            $request,
+            ['created_at'],
+        );
+    }
+
+    /**
      * Show the form for creating the resource.
      */
     public function create(): never

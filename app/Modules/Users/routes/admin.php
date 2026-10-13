@@ -16,4 +16,8 @@ Route::middleware('auth:sanctum')
         Route::middleware('can:manage.users')
             ->get('users', [UserController::class, 'index'])
             ->name('users.index');
+
+        Route::middleware('can:manage.users')
+            ->get('users/list', [UserController::class, 'listing'])
+            ->name('users.list');
     });
