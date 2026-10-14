@@ -39,8 +39,19 @@ class UserController extends Controller
      */
     public function listing(Request $request): JsonResponse
     {
+        $search = $request->string('search')->trim()->toString();
+
+        $query = User::query()
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                });
+            });
+
         return $this->paginated(
-            User::query()->select(['id', 'name', 'last_name', 'email', 'role', 'created_at']),
+            $query,
             $request,
             ['created_at'],
         );
